@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RI Restaurant Risk Assessment Tool - CSV Import</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+        }
+        .btn-predict {
+            background-image: linear-gradient(to right, #10b981, #059669);
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 6px -1px rgba(16, 185, 129, 0.4), 0 2px 4px -2px rgba(16, 185, 129, 0.4);
+        }
+        .btn-predict:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3), 0 4px 6px -4px rgba(16, 185, 129, 0.3);
+        }
+        .btn-upload {
+            background-image: linear-gradient(to right, #667eea, #764ba2);
+            transition: all 0.2s ease-in-out;
+        }
+        .btn-upload:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(102, 126, 234, 0.3);
+        }
+        .input-style {
+            padding: 0.5rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            width: 100%;
+            background-color: white;
+            transition: border-color 0.2s;
+        }
+        .input-style:focus {
+            border-color: #10b981;
+            outline: none;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #10b981;
+            border-radius: 50%;
+            width: 1.5rem;
+            height: 1.5rem;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .file-upload-area {
+            border: 2px dashed #cbd5e0;
+            transition: all 0.3s;
+        }
+        .file-upload-area:hover {
+            border-color: #667eea;
+            background-color: #f7fafc;
+        }
+        .file-upload-area.drag-over {
+            border-color: #667eea;
+            background-color: #eef2ff;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-6xl mx-auto bg-white shadow-xl rounded-xl p-4 md:p-6">
+
+        <!-- Header -->
+        <header class="text-center mb-6">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800">🏥 RI Restaurant Risk Assessment Tool</h1>
+            <p class="text-gray-500 mt-1 text-base">Upload CSV data from Python scraper and assess restaurant risk</p>
+        </header>
+
+        <!-- CSV Upload Section -->
+        <div class="mb-6 p-6 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg border-2 border-purple-200">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                📁 Step 1: Upload Inspection Data (CSV)
+            </h2>
+            
+            <div class="file-upload-area p-8 rounded-lg text-center cursor-pointer" id="uploadArea">
+                <input type="file" id="csvFileInput" accept=".csv" class="hidden">
+                <div id="uploadPrompt">
+                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <p class="mt-2 text-sm text-gray-600">
+                        <span class="font-semibold text-purple-600">Click to upload</span> or drag and drop
+                    </p>
+                    <p class="text-xs text-gray-500 mt-1">CSV file from RI Health Inspections Scraper</p>
+                </div>
+                <div id="uploadSuccess" class="hidden">
+                    <svg class="mx-auto h-12 w-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    <p class="mt-2 text-sm font-semibold text-green-600" id="uploadSuccessText"></p>
+                </div>
+            </div>
+
+            <div id="dataStats" class="hidden mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div class="bg-white p-3 rounded-lg shadow-sm border">
+                    <p class="text-xs text-gray-500">Total Facilities</p>
+                    <p class="text-2xl font-bold text-purple-600" id="statTotal">0</p>
+                </div>
+                <div class="bg-white p-3 rounded-lg shadow-sm border">
+                    <p class="text-xs text-gray-500">With Violations</p>
+                    <p class="text-2xl font-bold text-red-600" id="statViolations">0</p>
+                </div>
+                <div class="bg-white p-3 rounded-lg shadow-sm border">
+                    <p class="text-xs text-gray-500">Total Violations</p>
+                    <p class="text-2xl font-bold text-orange-600" id="statTotalViol">0</p>
+                </div>
+                <div class="bg-white p-3 rounded-lg shadow-sm border">
+                    <p class="text-xs text-gray-500">Critical</p>
+                    <p class="text-2xl font-bold text-red-700" id="statCritical">0</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Restaurant Selection -->
+        <div id="restaurantSection" class="hidden mb-6 p-6 bg-blue-50 rounded-lg border-2 border-blue-200">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                🍽️ Step 2: Select Restaurant
+            </h2>
+            <div class="flex gap-3">
+                <select id="restaurantSelect" class="input-style flex-grow text-base">
+                    <option value="">-- Select a Restaurant --</option>
+                </select>
+                <button id="loadRestaurantBtn" class="btn-upload text-white font-bold py-2 px-6 rounded-lg hover:opacity-90">
+                    Load Data
+                </button>
+            </div>
+            <p class="text-xs text-gray-500 mt-2">Select a restaurant from your uploaded CSV to auto-populate the risk assessment form</p>
+        </div>
+
+        <!-- Risk Assessment Form -->
+        <div id="assessmentSection" class="hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                <!-- Input Form - Column 1 & 2 -->
+                <div class="lg:col-span-2">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-3 border-b pb-2">📋 Establishment Data</h2>
+                    <form id="riskForm" class="space-y-4">
+
+                        <!-- Restaurant Info (Auto-populated from CSV) -->
+                        <div class="bg-gray-50 p-4 rounded-lg border">
+                            <h3 class="text-sm font-bold text-gray-700 mb-3">Restaurant Information (From CSV)</h3>
+                            
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-600 mb-1">Restaurant Name</label>
+                                    <input type="text" id="restaurantName" class="input-style bg-gray-100" readonly>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-600 mb-1">Facility ID</label>
+                                    <input type="text" id="restaurantId" class="input-style bg-gray-100" readonly>
+                                </div>
+                            </div>
+
+                            <div class="mt-3">
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Address</label>
+                                <input type="text" id="address" class="input-style bg-gray-100" readonly>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3 mt-3">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-600 mb-1">License Type</label>
+                                    <input type="text" id="licenseType" class="input-style bg-gray-100" readonly>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-600 mb-1">License Number</label>
+                                    <input type="text" id="licenseNumber" class="input-style bg-gray-100" readonly>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Inspection Data (Auto-populated from CSV) -->
+                        <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                            <h3 class="text-sm font-bold text-gray-700 mb-3">📊 Inspection History (From CSV)</h3>
+                            
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-600 mb-1">Last Inspection Date</label>
+                                    <input type="text" id="lastInspectionDate" class="input-style bg-white" readonly>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-600 mb-1">Months Since Inspection</label>
+                                    <input type="number" id="monthsSinceInspection" class="input-style bg-white" readonly>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3 mt-3">
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-600 mb-1">Total Violations</label>
+                                    <input type="number" id="totalViolations" class="input-style bg-white" readonly>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-600 mb-1">Critical Violations</label>
+                                    <input type="number" id="criticalViolations" class="input-style bg-white" readonly>
+                                </div>
+                            </div>
+
+                            <div class="mt-3">
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Inspection Purpose</label>
+                                <input type="text" id="inspectionPurpose" class="input-style bg-white" readonly>
+                            </div>
+
+                            <div class="mt-3">
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Violation Details</label>
+                                <textarea id="violationDetails" class="input-style bg-white" rows="2" readonly></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Risk Factors (Manual Input) -->
+                        <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+                            <h3 class="text-sm font-bold text-gray-700 mb-3">⚠️ Risk Factors (Adjust as Needed)</h3>
+
+                            <div>
+                                <label for="cuisineType" class="block text-sm font-medium text-gray-700 mb-1">Cuisine Type (Inherent Risk Factor)</label>
+                                <select id="cuisineType" class="input-style" required>
+                                    <option value="1.0">Low Risk (Coffee Shop, Bakery)</option>
+                                    <option value="1.4" selected>Medium Risk (American, Pizza, Thai)</option>
+                                    <option value="1.8">High Risk (Sushi, Raw Seafood, Buffet)</option>
+                                </select>
+                                <p class="text-xs text-gray-400 mt-1">Cuisines with complex raw-food handling carry higher baseline risk.</p>
+                            </div>
+
+                            <div class="mt-3">
+                                <label for="previousInspectionScore" class="block text-sm font-medium text-gray-700 mb-1">Previous Inspection Score (0-100)</label>
+                                <input type="number" id="previousInspectionScore" class="input-style" value="85" min="0" max="100" required>
+                                <p class="text-xs text-gray-400 mt-1">Estimate based on violation severity (100 = perfect, 0 = critical failure).</p>
+                            </div>
+
+                            <div class="mt-3 flex items-center justify-between p-3 border rounded-lg bg-white">
+                                <label for="specializedProcess" class="text-sm font-medium text-gray-700">Utilizes Specialized High-Risk Processes?</label>
+                                <select id="specializedProcess" class="input-style w-40">
+                                    <option value="0" selected>No (Standard)</option>
+                                    <option value="1">Yes (HACCP Required)</option>
+                                </select>
+                            </div>
+
+                            <div class="mt-3">
+                                <label for="certifiedManager" class="block text-sm font-medium text-gray-700 mb-1">Certified Food Safety Manager</label>
+                                <select id="certifiedManager" class="input-style" required>
+                                    <option value="0" selected>Certified Manager On Site</option>
+                                    <option value="1">No Certified Manager</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Consumer Data -->
+                        <div class="border p-3 rounded-lg bg-yellow-50 border-yellow-200">
+                            <h3 class="text-sm font-bold text-gray-700 mb-2">📱 Consumer-Generated Data (CGD)</h3>
+                            <div class="flex items-center justify-between">
+                                <label for="cgdReviews" class="text-sm font-medium text-gray-700">Negative Reviews (keywords: sick, pest, dirty)</label>
+                                <input type="number" id="cgdReviews" class="input-style w-24" value="0" min="0" max="10">
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1">Simulated Yelp/Google review data. Adjust based on external research.</p>
+                        </div>
+
+                        <!-- Calculate Button -->
+                        <button type="submit" class="btn-predict text-white font-bold py-3 px-8 rounded-lg w-full mt-4 flex items-center justify-center space-x-2">
+                            <span>🎯 CALCULATE PREDICTIVE RISK</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Output & Guidelines - Column 3 -->
+                <div class="lg:col-span-1 bg-gray-50 p-4 rounded-lg shadow-inner">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-3 border-b pb-2">📊 Predictive Output</h2>
+                    <div id="resultContainer" class="space-y-4">
+                        <div class="bg-indigo-100 border-l-4 border-indigo-500 text-indigo-700 p-3 rounded" role="alert" id="initialMessage">
+                            <p class="font-bold text-sm">Awaiting Calculation</p>
+                            <p class="text-sm">Fill in the data and click 'Calculate' to generate risk assessment.</p>
+                        </div>
+                        
+                        <!-- Score Output -->
+                        <div id="scoreOutput" class="hidden">
+                            <div class="text-center p-3 rounded-lg border-2" id="riskScoreCard">
+                                <p class="text-base font-medium text-gray-600">Risk Score (0-100)</p>
+                                <p class="text-4xl font-extrabold mt-1" id="riskScore">--</p>
+                            </div>
+                            <p class="text-sm font-bold mt-2" id="riskTierLabel">Risk Tier: </p>
+                        </div>
+
+                        <!-- Guidelines Output -->
+                        <div id="guidelinesOutput" class="hidden mt-4">
+                            <h3 class="text-base font-semibold text-gray-700">Actionable Guidelines:</h3>
+                            <ul class="list-disc list-inside text-gray-600 space-y-1 text-sm pl-3" id="guidelinesList"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let csvData = [];
+        let selectedRestaurant = null;
+
+        // File upload handling
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('csvFileInput');
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('drag-over');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('drag-over');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            const file = e.dataTransfer.files[0];
+            if (file && file.name.endsWith('.csv')) {
+                handleFile(file);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        });
+
+        // Parse CSV file
+        function handleFile(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                parseCSV(text);
+                
+                // Update UI
+                document.getElementById('uploadPrompt').classList.add('hidden');
+                document.getElementById('uploadSuccess').classList.remove('hidden');
+                document.getElementById('uploadSuccessText').textContent = `✓ ${file.name} loaded successfully!`;
+                document.getElementById('dataStats').classList.remove('hidden');
+                document.getElementById('restaurantSection').classList.remove('hidden');
+            };
+            reader.readAsText(file);
+        }
+
+        // Parse CSV text
+        function parseCSV(text) {
+            const lines = text.split('\n').filter(line => line.trim());
+            const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
+            
+            csvData = [];
+            for (let i = 1; i < lines.length; i++) {
+                const values = parseCSVLine(lines[i]);
+                const row = {};
+                headers.forEach((header, index) => {
+                    row[header] = values[index] || '';
+                });
+                csvData.push(row);
+            }
+
+            populateRestaurantDropdown();
+            updateDataStats();
+        }
+
+        // Parse CSV line (handles quoted fields with commas)
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current.trim());
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            result.push(current.trim());
+            
+            return result;
+        }
+
+        // Populate restaurant dropdown
+        function populateRestaurantDropdown() {
+            const select = document.getElementById('restaurantSelect');
+            select.innerHTML = '<option value="">-- Select a Restaurant --</option>';
+            
+            csvData.forEach((restaurant, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `${restaurant.Name} - ${restaurant.Address}`;
+                select.appendChild(option);
+            });
+        }
+
+        // Update data statistics
+        function updateDataStats() {
+            const total = csvData.length;
+            const withViolations = csvData.filter(r => parseInt(r['Total Violations'] || 0) > 0).length;
+            const totalViolations = csvData.reduce((sum, r) => sum + parseInt(r['Total Violations'] || 0), 0);
+            const criticalViolations = csvData.reduce((sum, r) => sum + parseInt(r['Critical Violations'] || 0), 0);
+
+            document.getElementById('statTotal').textContent = total;
+            document.getElementById('statViolations').textContent = withViolations;
+            document.getElementById('statTotalViol').textContent = totalViolations;
+            document.getElementById('statCritical').textContent = criticalViolations;
+        }
+
+        // Load selected restaurant
+        document.getElementById('loadRestaurantBtn').addEventListener('click', function() {
+            const selectIndex = document.getElementById('restaurantSelect').value;
+            
+            if (selectIndex === '') {
+                alert('Please select a restaurant first');
+                return;
+            }
+
+            selectedRestaurant = csvData[selectIndex];
+            populateForm(selectedRestaurant);
+            
+            document.getElementById('assessmentSection').classList.remove('hidden');
+            
+            // Smooth scroll to form
+            document.getElementById('assessmentSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+
+        // Populate form with restaurant data
+        function populateForm(restaurant) {
+            // Restaurant Info
+            document.getElementById('restaurantName').value = restaurant.Name || '';
+            document.getElementById('restaurantId').value = restaurant['Facility ID'] || '';
+            document.getElementById('address').value = restaurant.Address || '';
+            document.getElementById('licenseType').value = restaurant['License Type'] || '';
+            document.getElementById('licenseNumber').value = restaurant['License Number'] || '';
+
+            // Inspection Data
+            document.getElementById('lastInspectionDate').value = restaurant['Last Inspection Date'] || '';
+            document.getElementById('inspectionPurpose').value = restaurant['Inspection Purpose'] || '';
+            document.getElementById('totalViolations').value = restaurant['Total Violations'] || '0';
+            document.getElementById('criticalViolations').value = restaurant['Critical Violations'] || '0';
+            document.getElementById('violationDetails').value = restaurant['Violation Details'] || 'None';
+
+            // Calculate months since inspection
+            const inspectionDate = new Date(restaurant['Last Inspection Date']);
+            const today = new Date();
+            const monthsSince = Math.floor((today - inspectionDate) / (1000 * 60 * 60 * 24 * 30));
+            document.getElementById('monthsSinceInspection').value = Math.max(monthsSince, 0);
+
+            // Estimate inspection score based on violations
+            const totalViolations = parseInt(restaurant['Total Violations'] || 0);
+            const criticalViolations = parseInt(restaurant['Critical Violations'] || 0);
+            const estimatedScore = Math.max(100 - (totalViolations * 5) - (criticalViolations * 10), 0);
+            document.getElementById('previousInspectionScore').value = estimatedScore;
+
+            // Auto-detect cuisine type from license type
+            const licenseType = (restaurant['License Type'] || '').toLowerCase();
+            if (licenseType.includes('sushi') || licenseType.includes('seafood') || licenseType.includes('buffet')) {
+                document.getElementById('cuisineType').value = '1.8';
+            } else if (licenseType.includes('coffee') || licenseType.includes('bakery')) {
+                document.getElementById('cuisineType').value = '1.0';
+            } else {
+                document.getElementById('cuisineType').value = '1.4';
+            }
+
+            // Reset CGD reviews
+            document.getElementById('cgdReviews').value = '0';
+        }
+
+        // Calculate Risk
+        document.getElementById('riskForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            calculateRisk();
+        });
+
+        function calculateRisk() {
+            // Get values
+            const cuisineWeight = parseFloat(document.getElementById('cuisineType').value);
+            const previousScore = parseInt(document.getElementById('previousInspectionScore').value);
+            const violations = parseInt(document.getElementById('criticalViolations').value);
+            const specializedProcess = parseInt(document.getElementById('specializedProcess').value);
+            const certifiedManager = parseInt(document.getElementById('certifiedManager').value);
+            const months = parseInt(document.getElementById('monthsSinceInspection').value);
+            const reviews = parseInt(document.getElementById('cgdReviews').value);
+
+            // Weight calculations
+            const wViolations = violations * 15;
+            const wPreviousScore = (100 - previousScore) * 1.2;
+            const wSpecialized = specializedProcess * 10;
+            const wManager = certifiedManager * 15;
+            const wCuisine = (cuisineWeight - 1.0) * 8;
+            const wMonths = Math.min(months / 3, 5) * 4;
+            const wReviews = Math.min(reviews * 3, 20);
+
+            const rawScore = wViolations + wPreviousScore + wSpecialized + wManager + wCuisine + wMonths + wReviews;
+            const normalizedScore = Math.min(Math.round(rawScore), 100);
+
+            displayResults(normalizedScore, violations, months, reviews, specializedProcess, certifiedManager, previousScore);
+        }
+
+        function displayResults(score, violations, months, reviews, specializedProcess, certifiedManager, previousScore) {
+            const scoreElement = document.getElementById('riskScore');
+            const scoreCard = document.getElementById('riskScoreCard');
+            const tierLabel = document.getElementById('riskTierLabel');
+            const guidelinesList = document.getElementById('guidelinesList');
+
+            document.getElementById('initialMessage').classList.add('hidden');
+            document.getElementById('scoreOutput').classList.remove('hidden');
+            document.getElementById('guidelinesOutput').classList.remove('hidden');
+
+            scoreElement.textContent = score;
+            guidelinesList.innerHTML = '';
+
+            let riskTier = '';
+            let cardClass = '';
+            let tierTextClass = '';
+            let guidelines = [];
+
+            if (score >= 70) {
+                riskTier = 'High Risk';
+                cardClass = 'bg-red-50 border-red-500';
+                tierTextClass = 'text-red-600';
+                guidelines = getHighRiskGuidelines(violations, months, reviews, specializedProcess, certifiedManager, previousScore);
+            } else if (score >= 40) {
+                riskTier = 'Medium Risk';
+                cardClass = 'bg-yellow-50 border-yellow-500';
+                tierTextClass = 'text-yellow-600';
+                guidelines = getMediumRiskGuidelines(violations, months, reviews, specializedProcess, certifiedManager, previousScore);
+            } else {
+                riskTier = 'Low Risk';
+                cardClass = 'bg-green-50 border-green-500';
+                tierTextClass = 'text-green-600';
+                guidelines = getLowRiskGuidelines(specializedProcess, certifiedManager, previousScore);
+            }
+
+            scoreCard.className = `text-center p-3 rounded-lg border-2 ${cardClass}`;
+            scoreElement.className = `text-4xl font-extrabold mt-1 ${tierTextClass}`;
+            tierLabel.innerHTML = `Risk Tier: <span class="font-bold ${tierTextClass}">${riskTier}</span>`;
+
+            guidelines.forEach(g => {
+                const li = document.createElement('li');
+                li.textContent = g;
+                guidelinesList.appendChild(li);
+            });
+        }
+
+        function getHighRiskGuidelines(v, m, r, s, c, p) {
+            let list = [
+                'IMMEDIATE ACTION REQUIRED: Schedule full inspection within 7-14 days.',
+                'High risk of compliance failure based on historical data.'
+            ];
+            if (p < 80) list.push(`PAST FAILURE: Previous score of ${p} indicates major non-compliance history.`);
+            if (v > 2) list.push(`CRITICAL: ${v} critical violations require immediate follow-up.`);
+            if (c === 1) list.push('CRITICAL: No certified manager - immediate enforcement action required.');
+            if (s === 1) list.push('SPECIALIZED PROCESS: Verify approved HACCP plan is in place.');
+            if (m > 10) list.push('ALERT: Inspection overdue - prioritize scheduling.');
+            if (r > 3) list.push(`CGD ALERT: ${r} negative reviews warrant immediate investigation.`);
+            list.push('MANDATE: Require Corrective Action Plan before re-inspection.');
+            return list;
+        }
+
+        function getMediumRiskGuidelines(v, m, r, s, c, p) {
+            let list = [
+                'ELEVATED MONITORING: Schedule inspection within 90 days.',
+                'Consider unannounced spot-check of specific operational areas.'
+            ];
+            if (p < 90) list.push(`HISTORY: Previous score of ${p} suggests inconsistent performance.`);
+            if (v > 0) list.push(`FOCUS: Ensure ${v} critical violations are fully resolved.`);
+            if (c === 1) list.push('COMPLIANCE: Verify food safety training and knowledge gaps.');
+            if (s === 1) list.push('PROCESS: Confirm HACCP documentation is current.');
+            if (m > 6) list.push('TIME FACTOR: Risk increasing - prioritize compliance checks.');
+            if (r > 0) list.push(`CGD WATCH: ${r} reviews indicate emerging issues.`);
+            list.push('ACTION: Send educational materials on Time/Temperature Control.');
+            return list;
+        }
+
+        function getLowRiskGuidelines(s, c, p) {
+            let list = [
+                'ROUTINE SCHEDULE: Maintain standard inspection frequency.',
+                'SUGGESTION: Consider streamlined documentation review.',
+                'MONITOR: Continue passive monitoring of consumer feedback.'
+            ];
+            if (s === 1) list.push('NOTE: Verify HACCP records remain impeccable.');
+            if (p > 95) list.push(`BEST PRACTICE: Excellent score (${p}) - use as training benchmark.`);
+            list.push('RECOMMENDATION: Offer optional food safety training resources.');
+            return list;
+        }
+    </script>
+</body>
+</html>
