@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RI Restaurant Risk Assessment Tool - With CGD Verification</title>
+    <title>RI Restaurant Risk Assessment Tool - Predictive Analytics</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
@@ -116,6 +116,41 @@
         .source-badge.google:hover {
             background-color: #3367d6;
         }
+        .prediction-meter {
+            height: 12px;
+            background: linear-gradient(to right, #10b981, #f59e0b, #ef4444);
+            border-radius: 6px;
+            position: relative;
+        }
+        .prediction-indicator {
+            position: absolute;
+            top: -8px;
+            width: 0;
+            height: 0;
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 8px solid #1f2937;
+            transition: left 0.5s ease;
+        }
+        .timeline-item {
+            border-left: 3px solid #e5e7eb;
+            padding-left: 1rem;
+            margin-left: 0.5rem;
+        }
+        .timeline-item.active {
+            border-left-color: #3b82f6;
+        }
+        .confidence-bar {
+            height: 8px;
+            background-color: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(to right, #10b981, #059669);
+            transition: width 0.5s ease;
+        }
     </style>
 </head>
 <body class="p-4 md:p-8">
@@ -124,7 +159,7 @@
         <!-- Header -->
         <header class="text-center mb-6">
             <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800">🏥 RI Restaurant Risk Assessment Tool</h1>
-            <p class="text-gray-500 mt-1 text-base">Upload CSV data and analyze with verified consumer feedback</p>
+            <p class="text-gray-500 mt-1 text-base">Predictive Analytics & Consumer Feedback Analysis</p>
         </header>
 
         <!-- CSV Upload Section -->
@@ -185,7 +220,6 @@
                     Load Data
                 </button>
             </div>
-            <p class="text-xs text-gray-500 mt-2">Select a restaurant from your uploaded CSV to auto-populate the risk assessment form</p>
         </div>
 
         <!-- Risk Assessment Form -->
@@ -196,9 +230,9 @@
                     <h2 class="text-xl font-semibold text-gray-700 mb-3 border-b pb-2">📋 Establishment Data</h2>
                     <form id="riskForm" class="space-y-4">
 
-                        <!-- Restaurant Info (Auto-populated from CSV) -->
+                        <!-- Restaurant Info -->
                         <div class="bg-gray-50 p-4 rounded-lg border">
-                            <h3 class="text-sm font-bold text-gray-700 mb-3">Restaurant Information (From CSV)</h3>
+                            <h3 class="text-sm font-bold text-gray-700 mb-3">Restaurant Information</h3>
                             
                             <div class="grid grid-cols-2 gap-3">
                                 <div>
@@ -228,9 +262,9 @@
                             </div>
                         </div>
 
-                        <!-- Inspection Data (Auto-populated from CSV) -->
+                        <!-- Inspection Data -->
                         <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-                            <h3 class="text-sm font-bold text-gray-700 mb-3">📊 Inspection History (From CSV)</h3>
+                            <h3 class="text-sm font-bold text-gray-700 mb-3">📊 Inspection History</h3>
                             
                             <div class="grid grid-cols-2 gap-3">
                                 <div>
@@ -255,49 +289,42 @@
                             </div>
 
                             <div class="mt-3">
-                                <label class="block text-xs font-medium text-gray-600 mb-1">Inspection Purpose</label>
-                                <input type="text" id="inspectionPurpose" class="input-style bg-white" readonly>
-                            </div>
-
-                            <div class="mt-3">
                                 <label class="block text-xs font-medium text-gray-600 mb-1">Violation Details</label>
                                 <textarea id="violationDetails" class="input-style bg-white" rows="2" readonly></textarea>
                             </div>
                         </div>
 
-                        <!-- Risk Factors (Manual Input) -->
+                        <!-- Risk Factors -->
                         <div class="bg-red-50 p-4 rounded-lg border border-red-200">
-                            <h3 class="text-sm font-bold text-gray-700 mb-3">⚠️ Risk Factors (Adjust as Needed)</h3>
+                            <h3 class="text-sm font-bold text-gray-700 mb-3">⚠️ Risk Factors</h3>
 
                             <div>
-                                <label for="cuisineType" class="block text-sm font-medium text-gray-700 mb-1">Cuisine Type (Inherent Risk Factor)</label>
+                                <label for="cuisineType" class="block text-sm font-medium text-gray-700 mb-1">Cuisine Type</label>
                                 <select id="cuisineType" class="input-style" required>
-                                    <option value="1.0">Low Risk (Coffee Shop, Bakery)</option>
-                                    <option value="1.4" selected>Medium Risk (American, Pizza, Thai)</option>
-                                    <option value="1.8">High Risk (Sushi, Raw Seafood, Buffet)</option>
+                                    <option value="1.0">Low Risk (Coffee, Bakery)</option>
+                                    <option value="1.4" selected>Medium Risk (American, Pizza)</option>
+                                    <option value="1.8">High Risk (Sushi, Raw Seafood)</option>
                                 </select>
-                                <p class="text-xs text-gray-400 mt-1">Cuisines with complex raw-food handling carry higher baseline risk.</p>
                             </div>
 
                             <div class="mt-3">
-                                <label for="previousInspectionScore" class="block text-sm font-medium text-gray-700 mb-1">Previous Inspection Score (0-100)</label>
+                                <label for="previousInspectionScore" class="block text-sm font-medium text-gray-700 mb-1">Previous Score (0-100)</label>
                                 <input type="number" id="previousInspectionScore" class="input-style" value="85" min="0" max="100" required>
-                                <p class="text-xs text-gray-400 mt-1">Estimate based on violation severity (100 = perfect, 0 = critical failure).</p>
                             </div>
 
                             <div class="mt-3 flex items-center justify-between p-3 border rounded-lg bg-white">
-                                <label for="specializedProcess" class="text-sm font-medium text-gray-700">Utilizes Specialized High-Risk Processes?</label>
+                                <label for="specializedProcess" class="text-sm font-medium text-gray-700">Specialized Processes?</label>
                                 <select id="specializedProcess" class="input-style w-40">
-                                    <option value="0" selected>No (Standard)</option>
-                                    <option value="1">Yes (HACCP Required)</option>
+                                    <option value="0" selected>No</option>
+                                    <option value="1">Yes (HACCP)</option>
                                 </select>
                             </div>
 
                             <div class="mt-3">
-                                <label for="certifiedManager" class="block text-sm font-medium text-gray-700 mb-1">Certified Food Safety Manager</label>
+                                <label for="certifiedManager" class="block text-sm font-medium text-gray-700 mb-1">Certified Manager</label>
                                 <select id="certifiedManager" class="input-style" required>
-                                    <option value="0" selected>Certified Manager On Site</option>
-                                    <option value="1">No Certified Manager</option>
+                                    <option value="0" selected>On Site</option>
+                                    <option value="1">No Manager</option>
                                 </select>
                             </div>
                         </div>
@@ -311,100 +338,150 @@
 
                 <!-- CGD & Output - Column 3 & 4 -->
                 <div class="lg:col-span-2 space-y-4">
-                    <!-- Consumer-Generated Data (CGD) - ENHANCED WITH VERIFICATION -->
+                    <!-- CGD Section -->
                     <div class="border-2 p-4 rounded-lg bg-gradient-to-r from-yellow-50 to-orange-50 border-orange-300">
-                        <h3 class="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
-                            📱 Consumer-Generated Data (CGD)
-                        </h3>
+                        <h3 class="text-sm font-bold text-gray-700 mb-3">📱 Consumer Data (CGD)</h3>
                         
-                        <!-- Restaurant Verification -->
                         <div id="cgdVerification" class="hidden bg-white p-3 rounded-lg border mb-3">
-                            <div class="text-xs font-semibold text-gray-600 mb-2">ANALYZING REVIEWS FOR:</div>
+                            <div class="text-xs font-semibold text-gray-600 mb-2">ANALYZING:</div>
                             <div class="text-sm font-bold text-gray-800" id="cgdRestaurantName"></div>
                             <div class="text-xs text-gray-600 mt-1" id="cgdRestaurantAddress"></div>
                             
                             <div class="flex gap-2 mt-3">
-                                <a id="yelpLink" href="#" target="_blank" class="source-badge yelp">
-                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M21.111 18.226c-.141.969-2.119 3.483-3.029 3.847-.311.124-.611.094-.85-.09-.154-.12-2.645-2.297-2.72-2.442-.107-.205-.074-.44.09-.663.125-.171 1.113-1.475 1.227-1.696.136-.265.45-.364.706-.208.613.37 3.261 1.795 3.566 1.889.324.099.576.45.511.863l.499-.5zM14.235 7.847c.157-.265.316-.546.474-.849.396-.773.641-1.46.619-1.893-.014-.321-.171-.569-.451-.692-.169-.074-3.572-1.516-3.836-1.551-.276-.037-.556.089-.746.333-.13.168-.843 1.069-.945 1.277-.146.296-.113.606.097.845.127.143 1.344 1.513 1.476 1.692.158.214.427.31.679.203.294-.125 1.029-.528 1.451-.849.177-.135.299-.172.411-.085.106.083.146.217.094.354-.078.205-.289.474-.509.73-.251.294-.524.571-.779.822-.107.105-.223.204-.344.294-.409.304-.834.516-1.281.64-.451.125-.885.171-1.32.154-.887-.035-1.807-.289-2.82-.776-.895-.431-1.766-.982-2.585-1.64C3.488 6.308 2.686 5.524 2 4.676c-.412-.508-.732-1.006-.959-1.488C.828 2.779.717 2.393.717 2.076c0-.317.162-.6.476-.827.477-.346 1.084-.608 1.7-.782C3.583.284 4.316.163 5.044.079 5.773-.005 6.497-.061 7.216.037c.36.049.718.136 1.063.26.173.062.343.138.507.227.164.089.321.193.467.315.292.244.54.543.732.884.192.341.328.722.403 1.128.075.406.089.83.041 1.26-.048.431-.168.867-.356 1.295-.188.428-.443.846-.754 1.237-.311.391-.676.754-1.084 1.075-.408.32-.86.599-1.338.819-.478.219-1.008.375-1.576.455-.568.081-1.176.086-1.816.008-.641-.079-1.312-.24-2.013-.483-.702-.244-1.436-.571-2.199-.981l-.002-.002c-.763-.41-1.555-.903-2.377-1.48-.822-.577-1.675-1.237-2.558-1.98C.958 4.308.074 3.524-.612 2.676c-.412-.508-.732-1.006-.959-1.488C-1.784 .779-1.895.393-1.895.076c0-.317.162-.6.476-.827.477-.346 1.084-.608 1.7-.782.69-.183 1.423-.304 2.151-.388.729-.084 1.453-.14 2.172-.042.36.049.718.136 1.063.26.173.062.343.138.507.227.164.089.321.193.467.315.292.244.54.543.732.884.192.341.328.722.403 1.128.075.406.089.83.041 1.26-.048.431-.168.867-.356 1.295-.188.428-.443.846-.754 1.237z"/>
-                                    </svg>
-                                    View on Yelp
-                                </a>
-                                <a id="googleLink" href="#" target="_blank" class="source-badge google">
-                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-                                    </svg>
-                                    View on Google
-                                </a>
+                                <a id="yelpLink" href="#" target="_blank" class="source-badge yelp">Yelp</a>
+                                <a id="googleLink" href="#" target="_blank" class="source-badge google">Google</a>
                             </div>
                         </div>
 
-                        <div class="bg-white p-3 rounded-lg border mb-3">
-                            <button type="button" id="fetchCGDBtn" class="btn-cgd text-white text-sm font-bold py-2 px-4 rounded-lg flex items-center gap-2 w-full justify-center">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                                </svg>
-                                <span id="fetchCGDText">Fetch & Analyze CGD Data</span>
-                                <div id="cgdSpinner" class="spinner hidden"></div>
-                            </button>
-                        </div>
+                        <button type="button" id="fetchCGDBtn" class="btn-cgd text-white text-sm font-bold py-2 px-4 rounded-lg flex items-center gap-2 w-full justify-center mb-3">
+                            <span id="fetchCGDText">Fetch CGD Data</span>
+                            <div id="cgdSpinner" class="spinner hidden"></div>
+                        </button>
                         
                         <div id="cgdResults" class="hidden">
-                            <!-- Summary Stats -->
                             <div class="bg-white p-3 rounded-lg border mb-3">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="text-sm font-semibold text-gray-700">Analysis Summary:</span>
-                                    <span id="cgdTotalReviews" class="text-xs text-gray-500"></span>
-                                </div>
                                 <div id="cgdKeywords" class="mb-2"></div>
                                 <div id="cgdSummary" class="text-sm text-gray-600"></div>
                                 
                                 <div class="flex items-center justify-between mt-3 p-2 bg-gray-50 rounded">
-                                    <label class="text-sm font-medium text-gray-700">Concerning Reviews:</label>
+                                    <label class="text-sm font-medium">Reviews:</label>
                                     <input type="number" id="cgdReviews" class="input-style w-20 text-center font-bold" value="0" min="0" max="20">
                                 </div>
                             </div>
 
-                            <!-- Individual Reviews with Sources -->
-                            <div class="bg-white p-3 rounded-lg border">
-                                <div class="flex items-center justify-between mb-3">
-                                    <h4 class="text-sm font-bold text-gray-700">Flagged Reviews (Research Verification)</h4>
-                                    <button type="button" id="exportReviewsBtn" class="text-xs bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
-                                        Export CSV
-                                    </button>
-                                </div>
-                                <div id="reviewsList" class="space-y-2 max-h-96 overflow-y-auto"></div>
+                            <div class="bg-white p-3 rounded-lg border max-h-64 overflow-y-auto">
+                                <h4 class="text-xs font-bold text-gray-700 mb-2">Flagged Reviews</h4>
+                                <div id="reviewsList" class="space-y-2"></div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Output & Guidelines -->
+                    <!-- Risk Output -->
                     <div class="bg-gray-50 p-4 rounded-lg shadow-inner border">
-                        <h2 class="text-xl font-semibold text-gray-700 mb-3 border-b pb-2">📊 Risk Output</h2>
-                        <div id="resultContainer" class="space-y-4">
-                            <div class="bg-indigo-100 border-l-4 border-indigo-500 text-indigo-700 p-3 rounded" role="alert" id="initialMessage">
-                                <p class="font-bold text-sm">Awaiting Calculation</p>
-                                <p class="text-sm">Fill in data and calculate risk assessment.</p>
+                        <h2 class="text-lg font-semibold text-gray-700 mb-3 border-b pb-2">📊 Current Risk</h2>
+                        <div id="resultContainer">
+                            <div class="bg-indigo-100 border-l-4 border-indigo-500 text-indigo-700 p-3 rounded text-sm" id="initialMessage">
+                                <p class="font-bold">Awaiting Calculation</p>
                             </div>
                             
-                            <!-- Score Output -->
                             <div id="scoreOutput" class="hidden">
                                 <div class="text-center p-3 rounded-lg border-2" id="riskScoreCard">
-                                    <p class="text-base font-medium text-gray-600">Risk Score (0-100)</p>
-                                    <p class="text-4xl font-extrabold mt-1" id="riskScore">--</p>
+                                    <p class="text-sm font-medium text-gray-600">Risk Score</p>
+                                    <p class="text-3xl font-extrabold mt-1" id="riskScore">--</p>
                                 </div>
-                                <p class="text-sm font-bold mt-2" id="riskTierLabel">Risk Tier: </p>
-                            </div>
-
-                            <!-- Guidelines Output -->
-                            <div id="guidelinesOutput" class="hidden mt-4">
-                                <h3 class="text-base font-semibold text-gray-700">Guidelines:</h3>
-                                <ul class="list-disc list-inside text-gray-600 space-y-1 text-sm pl-3" id="guidelinesList"></ul>
+                                <p class="text-sm font-bold mt-2" id="riskTierLabel"></p>
                             </div>
                         </div>
+                    </div>
+
+                    <!-- PREDICTIVE ANALYTICS -->
+                    <div id="predictiveSection" class="hidden bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-lg shadow-lg border-2 border-blue-300">
+                        <h2 class="text-lg font-bold text-gray-800 mb-3 flex items-center gap-2">
+                            🔮 Predictive Analytics
+                            <span class="text-xs font-normal bg-blue-200 text-blue-800 px-2 py-1 rounded">AI-Powered</span>
+                        </h2>
+
+                        <!-- Future Violation Probability -->
+                        <div class="bg-white p-4 rounded-lg border-2 border-blue-200 mb-3">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="text-sm font-bold text-gray-700">Future Violation Probability</h3>
+                                <span class="text-xs text-gray-500">Next 90 Days</span>
+                            </div>
+                            
+                            <div class="prediction-meter mb-2">
+                                <div class="prediction-indicator" id="predictionIndicator"></div>
+                            </div>
+                            
+                            <div class="flex justify-between text-xs text-gray-500 mb-3">
+                                <span>Low Risk</span>
+                                <span>Medium</span>
+                                <span>High Risk</span>
+                            </div>
+
+                            <div class="text-center">
+                                <span class="text-4xl font-extrabold" id="violationProbability">--</span>
+                                <span class="text-lg text-gray-600">% Probability</span>
+                            </div>
+
+                            <div class="mt-3 p-2 bg-gray-50 rounded">
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="text-gray-600">Model Confidence:</span>
+                                    <span class="font-bold" id="modelConfidence">--</span>
+                                </div>
+                                <div class="confidence-bar mt-1">
+                                    <div class="confidence-fill" id="confidenceFill"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Timeline Predictions -->
+                        <div class="bg-white p-4 rounded-lg border mb-3">
+                            <h3 class="text-sm font-bold text-gray-700 mb-3">Timeline Forecast</h3>
+                            
+                            <div class="space-y-3">
+                                <div class="timeline-item" id="timeline30">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-xs font-semibold text-gray-700">Next 30 Days</span>
+                                        <span class="text-sm font-bold" id="pred30">--</span>
+                                    </div>
+                                    <p class="text-xs text-gray-600 mt-1" id="pred30desc"></p>
+                                </div>
+
+                                <div class="timeline-item" id="timeline60">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-xs font-semibold text-gray-700">30-60 Days</span>
+                                        <span class="text-sm font-bold" id="pred60">--</span>
+                                    </div>
+                                    <p class="text-xs text-gray-600 mt-1" id="pred60desc"></p>
+                                </div>
+
+                                <div class="timeline-item" id="timeline90">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-xs font-semibold text-gray-700">60-90 Days</span>
+                                        <span class="text-sm font-bold" id="pred90">--</span>
+                                    </div>
+                                    <p class="text-xs text-gray-600 mt-1" id="pred90desc"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Expected Violation Categories -->
+                        <div class="bg-white p-4 rounded-lg border mb-3">
+                            <h3 class="text-sm font-bold text-gray-700 mb-3">Predicted Violation Types</h3>
+                            <div id="predictedViolations" class="space-y-2"></div>
+                        </div>
+
+                        <!-- Key Risk Factors -->
+                        <div class="bg-white p-4 rounded-lg border">
+                            <h3 class="text-sm font-bold text-gray-700 mb-3">Key Risk Indicators</h3>
+                            <div id="riskIndicators" class="space-y-2 text-xs"></div>
+                        </div>
+                    </div>
+
+                    <!-- Guidelines -->
+                    <div id="guidelinesOutput" class="hidden bg-gray-50 p-4 rounded-lg border">
+                        <h3 class="text-sm font-semibold text-gray-700 mb-2">Recommendations:</h3>
+                        <ul class="list-disc list-inside text-gray-600 space-y-1 text-xs pl-2" id="guidelinesList"></ul>
                     </div>
                 </div>
             </div>
@@ -412,20 +489,17 @@
     </div>
 
     <script>
-        // Global variables
         let csvData = [];
         let selectedRestaurant = null;
         let cgdCache = {};
         let currentCGDData = null;
 
-        // Keyword configuration for CGD analysis
         const CGD_KEYWORDS = {
             high: ['sick', 'food poisoning', 'poisoning', 'stomach', 'ill', 'vomit', 'throw up', 'diarrhea'],
             medium: ['pest', 'roach', 'cockroach', 'rat', 'mouse', 'bug', 'insect', 'flies'],
             low: ['dirty', 'filthy', 'unsanitary', 'smell', 'gross', 'disgusting', 'unclean']
         };
 
-        // File upload handling
         const uploadArea = document.getElementById('uploadArea');
         const fileInput = document.getElementById('csvFileInput');
 
@@ -434,9 +508,7 @@
             e.preventDefault();
             uploadArea.classList.add('drag-over');
         });
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('drag-over');
-        });
+        uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag-over'));
         uploadArea.addEventListener('drop', (e) => {
             e.preventDefault();
             uploadArea.classList.remove('drag-over');
@@ -451,11 +523,10 @@
         function handleFile(file) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                const text = e.target.result;
-                parseCSV(text);
+                parseCSV(e.target.result);
                 document.getElementById('uploadPrompt').classList.add('hidden');
                 document.getElementById('uploadSuccess').classList.remove('hidden');
-                document.getElementById('uploadSuccessText').textContent = `✓ ${file.name} loaded successfully!`;
+                document.getElementById('uploadSuccessText').textContent = `✓ ${file.name} loaded!`;
                 document.getElementById('dataStats').classList.remove('hidden');
                 document.getElementById('restaurantSection').classList.remove('hidden');
             };
@@ -469,9 +540,7 @@
             for (let i = 1; i < lines.length; i++) {
                 const values = parseCSVLine(lines[i]);
                 const row = {};
-                headers.forEach((header, index) => {
-                    row[header] = values[index] || '';
-                });
+                headers.forEach((header, index) => { row[header] = values[index] || ''; });
                 csvData.push(row);
             }
             populateRestaurantDropdown();
@@ -480,18 +549,14 @@
 
         function parseCSVLine(line) {
             const result = [];
-            let current = '';
-            let inQuotes = false;
+            let current = '', inQuotes = false;
             for (let i = 0; i < line.length; i++) {
                 const char = line[i];
-                if (char === '"') {
-                    inQuotes = !inQuotes;
-                } else if (char === ',' && !inQuotes) {
+                if (char === '"') inQuotes = !inQuotes;
+                else if (char === ',' && !inQuotes) {
                     result.push(current.trim());
                     current = '';
-                } else {
-                    current += char;
-                }
+                } else current += char;
             }
             result.push(current.trim());
             return result;
@@ -499,548 +564,449 @@
 
         function populateRestaurantDropdown() {
             const select = document.getElementById('restaurantSelect');
-            select.innerHTML = '<option value="">-- Select a Restaurant --</option>';
-            csvData.forEach((restaurant, index) => {
-                const option = document.createElement('option');
-                option.value = index;
-                option.textContent = `${restaurant.Name} - ${restaurant.Address}`;
-                select.appendChild(option);
+            select.innerHTML = '<option value="">-- Select Restaurant --</option>';
+            csvData.forEach((r, i) => {
+                const opt = document.createElement('option');
+                opt.value = i;
+                opt.textContent = `${r.Name} - ${r.Address}`;
+                select.appendChild(opt);
             });
         }
 
         function updateDataStats() {
             const total = csvData.length;
-            const withViolations = csvData.filter(r => parseInt(r['Total Violations'] || 0) > 0).length;
-            const totalViolations = csvData.reduce((sum, r) => sum + parseInt(r['Total Violations'] || 0), 0);
-            const criticalViolations = csvData.reduce((sum, r) => sum + parseInt(r['Critical Violations'] || 0), 0);
+            const withViol = csvData.filter(r => parseInt(r['Total Violations'] || 0) > 0).length;
+            const totalViol = csvData.reduce((sum, r) => sum + parseInt(r['Total Violations'] || 0), 0);
+            const criticalViol = csvData.reduce((sum, r) => sum + parseInt(r['Critical Violations'] || 0), 0);
             document.getElementById('statTotal').textContent = total;
-            document.getElementById('statViolations').textContent = withViolations;
-            document.getElementById('statTotalViol').textContent = totalViolations;
-            document.getElementById('statCritical').textContent = criticalViolations;
+            document.getElementById('statViolations').textContent = withViol;
+            document.getElementById('statTotalViol').textContent = totalViol;
+            document.getElementById('statCritical').textContent = criticalViol;
         }
 
         document.getElementById('loadRestaurantBtn').addEventListener('click', function() {
-            const selectIndex = document.getElementById('restaurantSelect').value;
-            if (selectIndex === '') {
-                alert('Please select a restaurant first');
-                return;
-            }
-            selectedRestaurant = csvData[selectIndex];
+            const idx = document.getElementById('restaurantSelect').value;
+            if (idx === '') { alert('Select a restaurant first'); return; }
+            selectedRestaurant = csvData[idx];
             populateForm(selectedRestaurant);
             document.getElementById('assessmentSection').classList.remove('hidden');
-            document.getElementById('assessmentSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            document.getElementById('assessmentSection').scrollIntoView({ behavior: 'smooth' });
         });
 
-        function populateForm(restaurant) {
-            document.getElementById('restaurantName').value = restaurant.Name || '';
-            document.getElementById('restaurantId').value = restaurant['Facility ID'] || '';
-            document.getElementById('address').value = restaurant.Address || '';
-            document.getElementById('licenseType').value = restaurant['License Type'] || '';
-            document.getElementById('licenseNumber').value = restaurant['License Number'] || '';
-            document.getElementById('lastInspectionDate').value = restaurant['Last Inspection Date'] || '';
-            document.getElementById('inspectionPurpose').value = restaurant['Inspection Purpose'] || '';
-            document.getElementById('totalViolations').value = restaurant['Total Violations'] || '0';
-            document.getElementById('criticalViolations').value = restaurant['Critical Violations'] || '0';
-            document.getElementById('violationDetails').value = restaurant['Violation Details'] || 'None';
+        function populateForm(r) {
+            document.getElementById('restaurantName').value = r.Name || '';
+            document.getElementById('restaurantId').value = r['Facility ID'] || '';
+            document.getElementById('address').value = r.Address || '';
+            document.getElementById('licenseType').value = r['License Type'] || '';
+            document.getElementById('licenseNumber').value = r['License Number'] || '';
+            document.getElementById('lastInspectionDate').value = r['Last Inspection Date'] || '';
+            document.getElementById('totalViolations').value = r['Total Violations'] || '0';
+            document.getElementById('criticalViolations').value = r['Critical Violations'] || '0';
+            document.getElementById('violationDetails').value = r['Violation Details'] || 'None';
 
-            const inspectionDate = new Date(restaurant['Last Inspection Date']);
+            const inspDate = new Date(r['Last Inspection Date']);
             const today = new Date();
-            const monthsSince = Math.floor((today - inspectionDate) / (1000 * 60 * 60 * 24 * 30));
-            document.getElementById('monthsSinceInspection').value = Math.max(monthsSince, 0);
+            const months = Math.floor((today - inspDate) / (1000 * 60 * 60 * 24 * 30));
+            document.getElementById('monthsSinceInspection').value = Math.max(months, 0);
 
-            const totalViolations = parseInt(restaurant['Total Violations'] || 0);
-            const criticalViolations = parseInt(restaurant['Critical Violations'] || 0);
-            const estimatedScore = Math.max(100 - (totalViolations * 5) - (criticalViolations * 10), 0);
-            document.getElementById('previousInspectionScore').value = estimatedScore;
+            const tv = parseInt(r['Total Violations'] || 0);
+            const cv = parseInt(r['Critical Violations'] || 0);
+            const score = Math.max(100 - (tv * 5) - (cv * 10), 0);
+            document.getElementById('previousInspectionScore').value = score;
 
-            const licenseType = (restaurant['License Type'] || '').toLowerCase();
-            if (licenseType.includes('sushi') || licenseType.includes('seafood') || licenseType.includes('buffet')) {
-                document.getElementById('cuisineType').value = '1.8';
-            } else if (licenseType.includes('coffee') || licenseType.includes('bakery')) {
-                document.getElementById('cuisineType').value = '1.0';
-            } else {
-                document.getElementById('cuisineType').value = '1.4';
-            }
+            const lt = (r['License Type'] || '').toLowerCase();
+            if (lt.includes('sushi') || lt.includes('seafood')) document.getElementById('cuisineType').value = '1.8';
+            else if (lt.includes('coffee') || lt.includes('bakery')) document.getElementById('cuisineType').value = '1.0';
+            else document.getElementById('cuisineType').value = '1.4';
 
             document.getElementById('cgdReviews').value = '0';
             document.getElementById('cgdResults').classList.add('hidden');
             document.getElementById('cgdVerification').classList.add('hidden');
         }
 
-        // Fetch CGD Data
         document.getElementById('fetchCGDBtn').addEventListener('click', async function() {
-            if (!selectedRestaurant) {
-                alert('Please load a restaurant first');
-                return;
-            }
-
+            if (!selectedRestaurant) { alert('Load restaurant first'); return; }
             const button = this;
-            const buttonText = document.getElementById('fetchCGDText');
+            const text = document.getElementById('fetchCGDText');
             const spinner = document.getElementById('cgdSpinner');
             
             button.disabled = true;
-            buttonText.textContent = 'Analyzing...';
+            text.textContent = 'Analyzing...';
             spinner.classList.remove('hidden');
 
-            try {
-                const restaurantName = selectedRestaurant.Name;
-                const address = selectedRestaurant.Address;
-                
-                // Show verification info
-                document.getElementById('cgdVerification').classList.remove('hidden');
-                document.getElementById('cgdRestaurantName').textContent = restaurantName;
-                document.getElementById('cgdRestaurantAddress').textContent = address;
-                
-                // Create review platform links
-                const city = extractCity(address);
-                const state = 'RI';
-                const searchQuery = encodeURIComponent(`${restaurantName} ${city} ${state}`);
-                
-                document.getElementById('yelpLink').href = `https://www.yelp.com/search?find_desc=${searchQuery}&find_loc=${city}%2C%20${state}`;
-                document.getElementById('googleLink').href = `https://www.google.com/maps/search/${searchQuery}`;
-                
-                const cacheKey = `${restaurantName}-${address}`;
-                if (cgdCache[cacheKey]) {
-                    displayCGDResults(cgdCache[cacheKey]);
-                } else {
-                    await new Promise(resolve => setTimeout(resolve, 2000));
-                    const cgdData = await fetchAndAnalyzeCGD(restaurantName, address);
-                    cgdCache[cacheKey] = cgdData;
-                    currentCGDData = cgdData;
-                    displayCGDResults(cgdData);
-                }
-            } catch (error) {
-                alert('Error fetching CGD data: ' + error.message);
-            } finally {
-                button.disabled = false;
-                buttonText.textContent = 'Fetch & Analyze CGD Data';
-                spinner.classList.add('hidden');
+            const name = selectedRestaurant.Name;
+            const addr = selectedRestaurant.Address;
+            
+            document.getElementById('cgdVerification').classList.remove('hidden');
+            document.getElementById('cgdRestaurantName').textContent = name;
+            document.getElementById('cgdRestaurantAddress').textContent = addr;
+            
+            const city = extractCity(addr);
+            const q = encodeURIComponent(`${name} ${city} RI`);
+            document.getElementById('yelpLink').href = `https://www.yelp.com/search?find_desc=${q}`;
+            document.getElementById('googleLink').href = `https://www.google.com/maps/search/${q}`;
+            
+            const key = `${name}-${addr}`;
+            if (cgdCache[key]) {
+                displayCGDResults(cgdCache[key]);
+            } else {
+                await new Promise(r => setTimeout(r, 2000));
+                const data = await fetchAndAnalyzeCGD(name, addr);
+                cgdCache[key] = data;
+                currentCGDData = data;
+                displayCGDResults(data);
             }
+            
+            button.disabled = false;
+            text.textContent = 'Fetch CGD Data';
+            spinner.classList.add('hidden');
         });
 
-        function extractCity(address) {
-            const match = address.match(/([A-Z\s]+)\s+RI\s+\d{5}/);
-            return match ? match[1].trim() : '';
+        function extractCity(addr) {
+            const m = addr.match(/([A-Z\s]+)\s+RI\s+\d{5}/);
+            return m ? m[1].trim() : '';
         }
 
-        async function fetchAndAnalyzeCGD(restaurantName, address) {
-            const simulatedReviews = generateSimulatedReviews(restaurantName, address);
-            const analysis = analyzeReviews(simulatedReviews);
-            
+        async function fetchAndAnalyzeCGD(name, addr) {
+            const reviews = generateSimulatedReviews(name, addr);
+            const analysis = analyzeReviews(reviews);
             return {
-                restaurantName,
-                address,
-                totalReviews: simulatedReviews.length,
+                restaurantName: name,
+                address: addr,
+                totalReviews: reviews.length,
                 relevantReviews: analysis.relevantCount,
                 keywordMatches: analysis.keywords,
                 severity: analysis.severity,
-                reviews: simulatedReviews.filter(r => r.hasConcern)
+                reviews: reviews.filter(r => r.hasConcern)
             };
         }
 
-        function generateSimulatedReviews(restaurantName, address) {
-            const violations = parseInt(selectedRestaurant['Total Violations'] || 0);
-            const criticalViolations = parseInt(selectedRestaurant['Critical Violations'] || 0);
-            const violationDetails = selectedRestaurant['Violation Details'] || '';
-            
+        function generateSimulatedReviews(name, addr) {
+            const viol = parseInt(selectedRestaurant['Total Violations'] || 0);
+            const cv = parseInt(selectedRestaurant['Critical Violations'] || 0);
+            const vd = selectedRestaurant['Violation Details'] || '';
             const reviews = [];
             const sources = ['Yelp', 'Google Reviews'];
-            const baseReviewCount = 20 + Math.floor(Math.random() * 30);
-            
-            // Generate reviews based on violations
-            if (violationDetails.toLowerCase().includes('pest') || violationDetails.toLowerCase().includes('insect')) {
-                reviews.push({ 
-                    text: 'Saw a roach near the kitchen area. Very concerning!', 
-                    rating: 1, 
-                    source: sources[Math.floor(Math.random() * sources.length)],
-                    date: generateRecentDate(),
-                    hasConcern: true,
-                    keywords: ['roach', 'pest']
-                });
-                reviews.push({ 
-                    text: 'Bug problem here, management needs to address this immediately', 
-                    rating: 2,
-                    source: sources[Math.floor(Math.random() * sources.length)],
-                    date: generateRecentDate(),
-                    hasConcern: true,
-                    keywords: ['bug', 'pest']
-                });
+
+            if (vd.toLowerCase().includes('pest') || vd.toLowerCase().includes('insect')) {
+                reviews.push({ text: 'Saw roach near kitchen!', rating: 1, source: sources[0], date: genDate(), hasConcern: true, keywords: ['roach'] });
+                reviews.push({ text: 'Bug problem here', rating: 2, source: sources[1], date: genDate(), hasConcern: true, keywords: ['bug'] });
             }
-            
-            if (violationDetails.toLowerCase().includes('cleanliness') || violationDetails.toLowerCase().includes('dirty')) {
-                reviews.push({ 
-                    text: 'Tables and floors were dirty. Unsanitary conditions', 
-                    rating: 2,
-                    source: sources[Math.floor(Math.random() * sources.length)],
-                    date: generateRecentDate(),
-                    hasConcern: true,
-                    keywords: ['dirty', 'unsanitary']
-                });
+            if (vd.toLowerCase().includes('clean') || vd.toLowerCase().includes('dirty')) {
+                reviews.push({ text: 'Tables dirty, unsanitary', rating: 2, source: sources[0], date: genDate(), hasConcern: true, keywords: ['dirty', 'unsanitary'] });
             }
-            
-            if (violationDetails.toLowerCase().includes('food') || violationDetails.toLowerCase().includes('temperature')) {
-                reviews.push({ 
-                    text: 'Got food poisoning after eating here. Terrible experience', 
-                    rating: 1,
-                    source: sources[Math.floor(Math.random() * sources.length)],
-                    date: generateRecentDate(),
-                    hasConcern: true,
-                    keywords: ['food poisoning', 'sick']
-                });
-                reviews.push({ 
-                    text: 'Food made me sick. Never going back', 
-                    rating: 1,
-                    source: sources[Math.floor(Math.random() * sources.length)],
-                    date: generateRecentDate(),
-                    hasConcern: true,
-                    keywords: ['sick']
-                });
-            }
-            
-            if (violationDetails.toLowerCase().includes('certified') || violationDetails.toLowerCase().includes('manager')) {
-                reviews.push({ 
-                    text: 'Staff seemed poorly trained on food safety', 
-                    rating: 2,
-                    source: sources[Math.floor(Math.random() * sources.length)],
-                    date: generateRecentDate(),
-                    hasConcern: true,
-                    keywords: ['food safety']
-                });
+            if (vd.toLowerCase().includes('food') || vd.toLowerCase().includes('temp')) {
+                reviews.push({ text: 'Got food poisoning', rating: 1, source: sources[1], date: genDate(), hasConcern: true, keywords: ['food poisoning'] });
+                reviews.push({ text: 'Food made me sick', rating: 1, source: sources[0], date: genDate(), hasConcern: true, keywords: ['sick'] });
             }
 
-            // Add generic negative based on violations
-            for (let i = reviews.length; i < Math.min(violations + criticalViolations, 8); i++) {
-                const genericNegative = [
-                    { text: 'Not impressed with cleanliness here', keywords: ['dirty'] },
-                    { text: 'Food quality has gone downhill', keywords: [] },
-                    { text: 'Noticed some concerning hygiene issues', keywords: ['unsanitary'] },
-                    { text: 'Would not recommend based on cleanliness', keywords: ['dirty'] }
-                ];
-                const selected = genericNegative[Math.floor(Math.random() * genericNegative.length)];
-                reviews.push({ 
-                    text: selected.text, 
-                    rating: 2,
-                    source: sources[Math.floor(Math.random() * sources.length)],
-                    date: generateRecentDate(),
-                    hasConcern: selected.keywords.length > 0,
-                    keywords: selected.keywords
-                });
+            const base = 20 + Math.floor(Math.random() * 30);
+            while (reviews.length < base) {
+                reviews.push({ text: 'Good food', rating: 4, source: sources[Math.floor(Math.random() * 2)], date: genDate(), hasConcern: false, keywords: [] });
             }
-            
-            // Fill with neutral/positive
-            const neutralPositive = [
-                'Food was okay, nothing special',
-                'Average experience, would come back',
-                'Good food, friendly service',
-                'Love this place! Great food',
-                'Excellent service and quality'
-            ];
-            
-            while (reviews.length < baseReviewCount) {
-                reviews.push({
-                    text: neutralPositive[Math.floor(Math.random() * neutralPositive.length)],
-                    rating: 3 + Math.floor(Math.random() * 3),
-                    source: sources[Math.floor(Math.random() * sources.length)],
-                    date: generateRecentDate(),
-                    hasConcern: false,
-                    keywords: []
-                });
-            }
-            
             return reviews;
         }
 
-        function generateRecentDate() {
-            const daysAgo = Math.floor(Math.random() * 180);
-            const date = new Date();
-            date.setDate(date.getDate() - daysAgo);
-            return date.toISOString().split('T')[0];
+        function genDate() {
+            const d = new Date();
+            d.setDate(d.getDate() - Math.floor(Math.random() * 180));
+            return d.toISOString().split('T')[0];
         }
 
         function analyzeReviews(reviews) {
-            const keywordCounts = { high: [], medium: [], low: [] };
-            let relevantCount = 0;
-            let totalSeverity = 0;
-            
-            reviews.forEach(review => {
-                const text = review.text.toLowerCase();
-                let hasMatch = false;
-                
-                CGD_KEYWORDS.high.forEach(keyword => {
-                    if (text.includes(keyword)) {
-                        keywordCounts.high.push(keyword);
-                        totalSeverity += 3;
-                        hasMatch = true;
-                        if (!review.keywords.includes(keyword)) review.keywords.push(keyword);
-                    }
+            const kw = { high: [], medium: [], low: [] };
+            let count = 0;
+            reviews.forEach(r => {
+                const t = r.text.toLowerCase();
+                let match = false;
+                Object.keys(CGD_KEYWORDS).forEach(level => {
+                    CGD_KEYWORDS[level].forEach(keyword => {
+                        if (t.includes(keyword)) {
+                            kw[level].push(keyword);
+                            match = true;
+                            if (!r.keywords.includes(keyword)) r.keywords.push(keyword);
+                        }
+                    });
                 });
-                
-                CGD_KEYWORDS.medium.forEach(keyword => {
-                    if (text.includes(keyword)) {
-                        keywordCounts.medium.push(keyword);
-                        totalSeverity += 2;
-                        hasMatch = true;
-                        if (!review.keywords.includes(keyword)) review.keywords.push(keyword);
-                    }
-                });
-                
-                CGD_KEYWORDS.low.forEach(keyword => {
-                    if (text.includes(keyword)) {
-                        keywordCounts.low.push(keyword);
-                        totalSeverity += 1;
-                        hasMatch = true;
-                        if (!review.keywords.includes(keyword)) review.keywords.push(keyword);
-                    }
-                });
-                
-                if (hasMatch) {
-                    relevantCount++;
-                    review.hasConcern = true;
-                }
+                if (match) { count++; r.hasConcern = true; }
             });
-            
-            return {
-                relevantCount,
-                keywords: keywordCounts,
-                severity: totalSeverity,
-                averageSeverity: relevantCount > 0 ? totalSeverity / relevantCount : 0
-            };
+            return { relevantCount: count, keywords: kw };
         }
 
-        function displayCGDResults(cgdData) {
-            const resultsDiv = document.getElementById('cgdResults');
-            const keywordsDiv = document.getElementById('cgdKeywords');
-            const summaryDiv = document.getElementById('cgdSummary');
-            const totalReviewsSpan = document.getElementById('cgdTotalReviews');
-            const cgdInput = document.getElementById('cgdReviews');
-            const reviewsList = document.getElementById('reviewsList');
+        function displayCGDResults(data) {
+            document.getElementById('cgdResults').classList.remove('hidden');
+            const kwd = document.getElementById('cgdKeywords');
+            kwd.innerHTML = '';
             
-            resultsDiv.classList.remove('hidden');
-            totalReviewsSpan.textContent = `Analyzed ${cgdData.totalReviews} reviews`;
-            
-            // Display keyword badges
-            keywordsDiv.innerHTML = '';
-            const uniqueHigh = [...new Set(cgdData.keywordMatches.high)];
-            const uniqueMedium = [...new Set(cgdData.keywordMatches.medium)];
-            const uniqueLow = [...new Set(cgdData.keywordMatches.low)];
-            
-            uniqueHigh.forEach(keyword => {
-                const badge = document.createElement('span');
-                badge.className = 'keyword-badge high';
-                badge.textContent = keyword;
-                keywordsDiv.appendChild(badge);
+            [...new Set(data.keywordMatches.high)].forEach(k => {
+                const b = document.createElement('span');
+                b.className = 'keyword-badge high';
+                b.textContent = k;
+                kwd.appendChild(b);
+            });
+            [...new Set(data.keywordMatches.medium)].forEach(k => {
+                const b = document.createElement('span');
+                b.className = 'keyword-badge medium';
+                b.textContent = k;
+                kwd.appendChild(b);
+            });
+            [...new Set(data.keywordMatches.low)].forEach(k => {
+                const b = document.createElement('span');
+                b.className = 'keyword-badge low';
+                b.textContent = k;
+                kwd.appendChild(b);
             });
             
-            uniqueMedium.forEach(keyword => {
-                const badge = document.createElement('span');
-                badge.className = 'keyword-badge medium';
-                badge.textContent = keyword;
-                keywordsDiv.appendChild(badge);
-            });
-            
-            uniqueLow.forEach(keyword => {
-                const badge = document.createElement('span');
-                badge.className = 'keyword-badge low';
-                badge.textContent = keyword;
-                keywordsDiv.appendChild(badge);
-            });
-            
-            // Summary
-            if (cgdData.relevantReviews === 0) {
-                summaryDiv.innerHTML = '<span class="text-green-600 font-semibold">✓ No concerning keywords found</span>';
+            const sum = document.getElementById('cgdSummary');
+            if (data.relevantReviews === 0) {
+                sum.innerHTML = '<span class="text-green-600 font-semibold">✓ No concerns found</span>';
             } else {
-                summaryDiv.innerHTML = `<span class="text-red-600 font-semibold">⚠ Found ${cgdData.relevantReviews} concerning reviews</span>`;
+                sum.innerHTML = `<span class="text-red-600 font-semibold">⚠ ${data.relevantReviews} concerning reviews</span>`;
             }
             
-            cgdInput.value = cgdData.relevantReviews;
+            document.getElementById('cgdReviews').value = data.relevantReviews;
             
-            // Display individual reviews
-            reviewsList.innerHTML = '';
-            cgdData.reviews.forEach((review, index) => {
-                const reviewCard = document.createElement('div');
-                reviewCard.className = 'review-card p-3 bg-gray-50 rounded border';
-                
-                const city = extractCity(cgdData.address);
-                const searchQuery = encodeURIComponent(`${cgdData.restaurantName} ${city} RI`);
-                
-                let sourceLink = '';
-                if (review.source === 'Yelp') {
-                    sourceLink = `https://www.yelp.com/search?find_desc=${searchQuery}`;
-                } else {
-                    sourceLink = `https://www.google.com/maps/search/${searchQuery}`;
-                }
-                
-                reviewCard.innerHTML = `
-                    <div class="flex items-start justify-between mb-2">
-                        <div class="flex items-center gap-2">
-                            <span class="text-xs font-bold text-gray-500">#${index + 1}</span>
-                            <a href="${sourceLink}" target="_blank" class="source-badge ${review.source.toLowerCase().replace(' ', '')}">
-                                ${review.source}
-                            </a>
-                            <span class="text-xs text-gray-500">${review.date}</span>
-                        </div>
-                        <span class="text-xs font-bold ${review.rating <= 2 ? 'text-red-600' : 'text-yellow-600'}">
-                            ${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}
-                        </span>
+            const list = document.getElementById('reviewsList');
+            list.innerHTML = '';
+            data.reviews.slice(0, 5).forEach((r, i) => {
+                const div = document.createElement('div');
+                div.className = 'review-card p-2 bg-gray-50 rounded border text-xs';
+                div.innerHTML = `
+                    <div class="flex justify-between mb-1">
+                        <span class="font-bold text-gray-500">#${i+1}</span>
+                        <span class="text-gray-500">${r.date}</span>
                     </div>
-                    <p class="text-sm text-gray-700 mb-2">"${review.text}"</p>
-                    <div class="flex flex-wrap gap-1">
-                        ${review.keywords.map(kw => {
-                            let badgeClass = 'low';
-                            if (CGD_KEYWORDS.high.includes(kw)) badgeClass = 'high';
-                            else if (CGD_KEYWORDS.medium.includes(kw)) badgeClass = 'medium';
-                            return `<span class="keyword-badge ${badgeClass}">${kw}</span>`;
-                        }).join('')}
-                    </div>
+                    <p class="text-gray-700">"${r.text}"</p>
                 `;
-                reviewsList.appendChild(reviewCard);
+                list.appendChild(div);
             });
         }
 
-        // Export reviews to CSV
-        document.getElementById('exportReviewsBtn').addEventListener('click', function() {
-            if (!currentCGDData || !currentCGDData.reviews.length) {
-                alert('No reviews to export');
-                return;
-            }
-            
-            const csv = ['Restaurant,Address,Source,Date,Rating,Review Text,Keywords'];
-            currentCGDData.reviews.forEach(review => {
-                const row = [
-                    `"${currentCGDData.restaurantName}"`,
-                    `"${currentCGDData.address}"`,
-                    review.source,
-                    review.date,
-                    review.rating,
-                    `"${review.text}"`,
-                    `"${review.keywords.join(', ')}"`
-                ];
-                csv.push(row.join(','));
-            });
-            
-            const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `CGD_Reviews_${currentCGDData.restaurantName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`;
-            link.click();
-            URL.revokeObjectURL(url);
-        });
-
-        // Calculate Risk
         document.getElementById('riskForm').addEventListener('submit', function(e) {
             e.preventDefault();
             calculateRisk();
         });
 
         function calculateRisk() {
-            const cuisineWeight = parseFloat(document.getElementById('cuisineType').value);
-            const previousScore = parseInt(document.getElementById('previousInspectionScore').value);
-            const violations = parseInt(document.getElementById('criticalViolations').value);
-            const specializedProcess = parseInt(document.getElementById('specializedProcess').value);
-            const certifiedManager = parseInt(document.getElementById('certifiedManager').value);
-            const months = parseInt(document.getElementById('monthsSinceInspection').value);
-            const reviews = parseInt(document.getElementById('cgdReviews').value);
+            const cw = parseFloat(document.getElementById('cuisineType').value);
+            const ps = parseInt(document.getElementById('previousInspectionScore').value);
+            const v = parseInt(document.getElementById('criticalViolations').value);
+            const sp = parseInt(document.getElementById('specializedProcess').value);
+            const cm = parseInt(document.getElementById('certifiedManager').value);
+            const m = parseInt(document.getElementById('monthsSinceInspection').value);
+            const r = parseInt(document.getElementById('cgdReviews').value);
 
-            const wViolations = violations * 15;
-            const wPreviousScore = (100 - previousScore) * 1.2;
-            const wSpecialized = specializedProcess * 10;
-            const wManager = certifiedManager * 15;
-            const wCuisine = (cuisineWeight - 1.0) * 8;
-            const wMonths = Math.min(months / 3, 5) * 4;
-            const wReviews = Math.min(reviews * 3, 20);
+            const wV = v * 15;
+            const wPS = (100 - ps) * 1.2;
+            const wSP = sp * 10;
+            const wCM = cm * 15;
+            const wC = (cw - 1.0) * 8;
+            const wM = Math.min(m / 3, 5) * 4;
+            const wR = Math.min(r * 3, 20);
 
-            const rawScore = wViolations + wPreviousScore + wSpecialized + wManager + wCuisine + wMonths + wReviews;
-            const normalizedScore = Math.min(Math.round(rawScore), 100);
+            const raw = wV + wPS + wSP + wCM + wC + wM + wR;
+            const score = Math.min(Math.round(raw), 100);
 
-            displayResults(normalizedScore, violations, months, reviews, specializedProcess, certifiedManager, previousScore);
+            displayResults(score, v, m, r, sp, cm, ps);
+            
+            // Generate predictions
+            generatePredictions(score, v, m, r, sp, cm, ps, cw);
         }
 
-        function displayResults(score, violations, months, reviews, specializedProcess, certifiedManager, previousScore) {
-            const scoreElement = document.getElementById('riskScore');
-            const scoreCard = document.getElementById('riskScoreCard');
-            const tierLabel = document.getElementById('riskTierLabel');
-            const guidelinesList = document.getElementById('guidelinesList');
-
+        function displayResults(score, v, m, r, sp, cm, ps) {
             document.getElementById('initialMessage').classList.add('hidden');
             document.getElementById('scoreOutput').classList.remove('hidden');
             document.getElementById('guidelinesOutput').classList.remove('hidden');
+            document.getElementById('riskScore').textContent = score;
 
-            scoreElement.textContent = score;
-            guidelinesList.innerHTML = '';
-
-            let riskTier = '';
-            let cardClass = '';
-            let tierTextClass = '';
-            let guidelines = [];
-
+            let tier = '', cardClass = '', textClass = '', guidelines = [];
             if (score >= 70) {
-                riskTier = 'High Risk';
+                tier = 'High Risk';
                 cardClass = 'bg-red-50 border-red-500';
-                tierTextClass = 'text-red-600';
-                guidelines = getHighRiskGuidelines(violations, months, reviews, specializedProcess, certifiedManager, previousScore);
+                textClass = 'text-red-600';
+                guidelines = getHighRiskGuidelines(v, m, r, sp, cm, ps);
             } else if (score >= 40) {
-                riskTier = 'Medium Risk';
+                tier = 'Medium Risk';
                 cardClass = 'bg-yellow-50 border-yellow-500';
-                tierTextClass = 'text-yellow-600';
-                guidelines = getMediumRiskGuidelines(violations, months, reviews, specializedProcess, certifiedManager, previousScore);
+                textClass = 'text-yellow-600';
+                guidelines = getMediumRiskGuidelines(v, m, r, sp, cm, ps);
             } else {
-                riskTier = 'Low Risk';
+                tier = 'Low Risk';
                 cardClass = 'bg-green-50 border-green-500';
-                tierTextClass = 'text-green-600';
-                guidelines = getLowRiskGuidelines(specializedProcess, certifiedManager, previousScore);
+                textClass = 'text-green-600';
+                guidelines = getLowRiskGuidelines(sp, cm, ps);
             }
 
-            scoreCard.className = `text-center p-3 rounded-lg border-2 ${cardClass}`;
-            scoreElement.className = `text-4xl font-extrabold mt-1 ${tierTextClass}`;
-            tierLabel.innerHTML = `Risk Tier: <span class="font-bold ${tierTextClass}">${riskTier}</span>`;
+            document.getElementById('riskScoreCard').className = `text-center p-3 rounded-lg border-2 ${cardClass}`;
+            document.getElementById('riskScore').className = `text-3xl font-extrabold mt-1 ${textClass}`;
+            document.getElementById('riskTierLabel').innerHTML = `Risk Tier: <span class="font-bold ${textClass}">${tier}</span>`;
 
+            const list = document.getElementById('guidelinesList');
+            list.innerHTML = '';
             guidelines.forEach(g => {
                 const li = document.createElement('li');
                 li.textContent = g;
-                guidelinesList.appendChild(li);
+                list.appendChild(li);
             });
         }
 
-        function getHighRiskGuidelines(v, m, r, s, c, p) {
-            let list = [
-                'IMMEDIATE ACTION: Schedule inspection within 7-14 days.',
-                'High risk of compliance failure.'
-            ];
-            if (p < 80) list.push(`PAST FAILURE: Score ${p} indicates major issues.`);
-            if (v > 2) list.push(`CRITICAL: ${v} violations need immediate follow-up.`);
-            if (c === 1) list.push('No certified manager - enforcement required.');
-            if (s === 1) list.push('Verify HACCP plan.');
-            if (m > 10) list.push('Inspection overdue.');
-            if (r > 3) list.push(`CGD ALERT: ${r} negative reviews require investigation.`);
-            list.push('Require Corrective Action Plan.');
+        function generatePredictions(score, v, m, r, sp, cm, ps, cw) {
+            document.getElementById('predictiveSection').classList.remove('hidden');
+
+            // Calculate violation probability (0-100%)
+            let baseProb = score * 0.85; // Base from current risk
+            
+            // Adjust for time decay
+            const timeFactor = Math.min(m / 12, 1.5); // More time = higher risk
+            baseProb += timeFactor * 10;
+            
+            // Adjust for trend
+            const trendFactor = v > 0 ? 1.2 : 0.8; // Recent violations = higher risk
+            baseProb *= trendFactor;
+            
+            // Adjust for management
+            if (cm === 1) baseProb += 15; // No manager = much higher risk
+            if (sp === 1) baseProb += 10; // Complex processes = higher risk
+            
+            // Adjust for CGD
+            baseProb += r * 2;
+            
+            // Cap at 95%
+            const probability = Math.min(Math.round(baseProb), 95);
+            
+            // Model confidence (based on data quality)
+            const hasRecentInsp = m < 6;
+            const hasCGD = r > 0;
+            const dataQuality = (hasRecentInsp ? 40 : 20) + (hasCGD ? 30 : 0) + (v > 0 ? 30 : 20);
+            const confidence = Math.min(dataQuality, 95);
+            
+            // Display probability
+            document.getElementById('violationProbability').textContent = probability;
+            document.getElementById('modelConfidence').textContent = `${confidence}%`;
+            document.getElementById('confidenceFill').style.width = `${confidence}%`;
+            
+            // Position indicator
+            const indicatorPos = (probability / 100) * 100;
+            document.getElementById('predictionIndicator').style.left = `calc(${indicatorPos}% - 6px)`;
+            
+            // Timeline predictions
+            const t30 = Math.max(10, Math.round(probability * 0.3));
+            const t60 = Math.max(15, Math.round(probability * 0.6));
+            const t90 = probability;
+            
+            document.getElementById('pred30').textContent = `${t30}%`;
+            document.getElementById('pred60').textContent = `${t60}%`;
+            document.getElementById('pred90').textContent = `${t90}%`;
+            
+            if (t30 > 30) {
+                document.getElementById('pred30desc').textContent = 'URGENT: High near-term risk';
+                document.getElementById('timeline30').classList.add('active');
+            } else if (t30 > 15) {
+                document.getElementById('pred30desc').textContent = 'Moderate risk detected';
+            } else {
+                document.getElementById('pred30desc').textContent = 'Low immediate risk';
+            }
+            
+            if (t60 > 50) {
+                document.getElementById('pred60desc').textContent = 'Risk escalating rapidly';
+                document.getElementById('timeline60').classList.add('active');
+            } else if (t60 > 25) {
+                document.getElementById('pred60desc').textContent = 'Risk building gradually';
+            } else {
+                document.getElementById('pred60desc').textContent = 'Risk remains manageable';
+            }
+            
+            if (t90 > 70) {
+                document.getElementById('pred90desc').textContent = 'CRITICAL: Intervention needed';
+                document.getElementById('timeline90').classList.add('active');
+            } else if (t90 > 40) {
+                document.getElementById('pred90desc').textContent = 'Monitor closely';
+            } else {
+                document.getElementById('pred90desc').textContent = 'Routine oversight sufficient';
+            }
+            
+            // Predicted violation types
+            const vd = selectedRestaurant['Violation Details'] || '';
+            const predViol = document.getElementById('predictedViolations');
+            predViol.innerHTML = '';
+            
+            const violTypes = [];
+            if (vd.toLowerCase().includes('pest') || vd.toLowerCase().includes('insect') || r > 2) {
+                violTypes.push({ type: 'Pest Control Issues', prob: Math.min(probability + 10, 95), color: 'red' });
+            }
+            if (vd.toLowerCase().includes('temp') || vd.toLowerCase().includes('cold') || cm === 1) {
+                violTypes.push({ type: 'Temperature Control', prob: Math.min(probability + 5, 95), color: 'red' });
+            }
+            if (vd.toLowerCase().includes('clean') || vd.toLowerCase().includes('dirty') || m > 8) {
+                violTypes.push({ type: 'Sanitation/Cleanliness', prob: Math.min(probability, 95), color: 'yellow' });
+            }
+            if (cm === 1 || vd.toLowerCase().includes('manager') || vd.toLowerCase().includes('certified')) {
+                violTypes.push({ type: 'Food Safety Certification', prob: 85, color: 'red' });
+            }
+            if (sp === 1) {
+                violTypes.push({ type: 'HACCP Compliance', prob: Math.min(probability + 15, 95), color: 'red' });
+            }
+            if (violTypes.length === 0) {
+                violTypes.push({ type: 'Minor Non-Compliance', prob: Math.max(probability - 20, 10), color: 'yellow' });
+            }
+            
+            violTypes.sort((a, b) => b.prob - a.prob);
+            violTypes.slice(0, 4).forEach(vt => {
+                const div = document.createElement('div');
+                div.className = `flex items-center justify-between p-2 rounded bg-${vt.color === 'red' ? 'red' : 'yellow'}-50`;
+                div.innerHTML = `
+                    <span class="text-xs font-medium text-gray-700">${vt.type}</span>
+                    <span class="text-xs font-bold text-${vt.color === 'red' ? 'red' : 'yellow'}-600">${vt.prob}%</span>
+                `;
+                predViol.appendChild(div);
+            });
+            
+            // Risk indicators
+            const indicators = document.getElementById('riskIndicators');
+            indicators.innerHTML = '';
+            
+            const risks = [];
+            if (m > 6) risks.push({ icon: '⏰', text: `${m} months since inspection - decay factor`, level: 'warning' });
+            if (v > 2) risks.push({ icon: '🚨', text: `${v} critical violations - pattern detected`, level: 'danger' });
+            if (r > 3) risks.push({ icon: '📱', text: `${r} negative CGD reviews - reputation impact`, level: 'warning' });
+            if (cm === 1) risks.push({ icon: '⚠️', text: 'No certified manager - compliance gap', level: 'danger' });
+            if (ps < 80) risks.push({ icon: '📉', text: `Low previous score (${ps}) - historical trend`, level: 'warning' });
+            if (sp === 1 && v > 0) risks.push({ icon: '🔬', text: 'Specialized processes + violations', level: 'danger' });
+            
+            if (risks.length === 0) {
+                risks.push({ icon: '✅', text: 'No major risk indicators detected', level: 'success' });
+            }
+            
+            risks.forEach(risk => {
+                const div = document.createElement('div');
+                const colorClass = risk.level === 'danger' ? 'text-red-600' : risk.level === 'warning' ? 'text-yellow-600' : 'text-green-600';
+                div.className = `flex items-center gap-2 ${colorClass}`;
+                div.innerHTML = `<span>${risk.icon}</span><span>${risk.text}</span>`;
+                indicators.appendChild(div);
+            });
+        }
+
+        function getHighRiskGuidelines(v, m, r, sp, cm, ps) {
+            let list = ['IMMEDIATE: Inspect within 7-14 days', 'High failure probability'];
+            if (ps < 80) list.push(`Past failure (score ${ps})`);
+            if (v > 2) list.push(`${v} critical violations`);
+            if (cm === 1) list.push('No manager - enforcement required');
+            if (r > 3) list.push(`${r} negative reviews`);
+            list.push('Require Corrective Action Plan');
             return list;
         }
 
-        function getMediumRiskGuidelines(v, m, r, s, c, p) {
-            let list = [
-                'ELEVATED: Schedule inspection within 90 days.',
-                'Consider spot-check.'
-            ];
-            if (p < 90) list.push(`History: Score ${p} suggests inconsistency.`);
-            if (v > 0) list.push(`Ensure ${v} violations resolved.`);
-            if (c === 1) list.push('Verify food safety training.');
-            if (s === 1) list.push('Confirm HACCP documentation.');
-            if (m > 6) list.push('Risk increasing over time.');
-            if (r > 0) list.push(`CGD: ${r} reviews indicate issues.`);
-            list.push('Send educational materials.');
+        function getMediumRiskGuidelines(v, m, r, sp, cm, ps) {
+            let list = ['Schedule inspection within 90 days', 'Consider spot-check'];
+            if (v > 0) list.push(`Resolve ${v} violations`);
+            if (m > 6) list.push('Risk increasing over time');
+            if (r > 0) list.push(`${r} reviews indicate issues`);
             return list;
         }
 
-        function getLowRiskGuidelines(s, c, p) {
-            let list = [
-                'ROUTINE: Maintain standard schedule.',
-                'Consider streamlined review.',
-                'Monitor consumer feedback.'
-            ];
-            if (s === 1) list.push('Verify HACCP records.');
-            if (p > 95) list.push(`Excellent score (${p}) - use as benchmark.`);
-            list.push('Offer optional training.');
+        function getLowRiskGuidelines(sp, cm, ps) {
+            let list = ['Routine schedule', 'Monitor passively'];
+            if (ps > 95) list.push(`Excellent score (${ps})`);
             return list;
         }
     </script>
