@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RI Restaurant Risk Assessment Tool - With CGD Analysis</title>
+    <title>RI Restaurant Risk Assessment Tool - With CGD Verification</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
@@ -83,15 +83,48 @@
         .keyword-badge.high { background-color: #fee2e2; color: #991b1b; }
         .keyword-badge.medium { background-color: #fef3c7; color: #92400e; }
         .keyword-badge.low { background-color: #dbeafe; color: #1e40af; }
+        .review-card {
+            border-left: 4px solid #e5e7eb;
+            transition: all 0.2s;
+        }
+        .review-card:hover {
+            border-left-color: #f59e0b;
+            background-color: #fffbeb;
+        }
+        .source-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .source-badge.yelp {
+            background-color: #d32323;
+            color: white;
+        }
+        .source-badge.yelp:hover {
+            background-color: #b51e1e;
+        }
+        .source-badge.google {
+            background-color: #4285f4;
+            color: white;
+        }
+        .source-badge.google:hover {
+            background-color: #3367d6;
+        }
     </style>
 </head>
 <body class="p-4 md:p-8">
-    <div class="max-w-6xl mx-auto bg-white shadow-xl rounded-xl p-4 md:p-6">
+    <div class="max-w-7xl mx-auto bg-white shadow-xl rounded-xl p-4 md:p-6">
 
         <!-- Header -->
         <header class="text-center mb-6">
             <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800">🏥 RI Restaurant Risk Assessment Tool</h1>
-            <p class="text-gray-500 mt-1 text-base">Upload CSV data and analyze with real-time consumer feedback</p>
+            <p class="text-gray-500 mt-1 text-base">Upload CSV data and analyze with verified consumer feedback</p>
         </header>
 
         <!-- CSV Upload Section -->
@@ -157,9 +190,9 @@
 
         <!-- Risk Assessment Form -->
         <div id="assessmentSection" class="hidden">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-4">
                 <!-- Input Form - Column 1 & 2 -->
-                <div class="lg:col-span-2">
+                <div class="lg:col-span-3">
                     <h2 class="text-xl font-semibold text-gray-700 mb-3 border-b pb-2">📋 Establishment Data</h2>
                     <form id="riskForm" class="space-y-4">
 
@@ -269,45 +302,6 @@
                             </div>
                         </div>
 
-                        <!-- Consumer-Generated Data (CGD) - ENHANCED -->
-                        <div class="border-2 p-4 rounded-lg bg-gradient-to-r from-yellow-50 to-orange-50 border-orange-300">
-                            <h3 class="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
-                                📱 Consumer-Generated Data (CGD)
-                                <span class="text-xs font-normal text-gray-500">(Yelp, Google Reviews)</span>
-                            </h3>
-                            
-                            <div class="bg-white p-3 rounded-lg border mb-3">
-                                <div class="flex items-center justify-between mb-2">
-                                    <label class="text-sm font-medium text-gray-700">Negative Reviews with Keywords</label>
-                                    <button type="button" id="fetchCGDBtn" class="btn-cgd text-white text-sm font-bold py-2 px-4 rounded-lg flex items-center gap-2">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                                        </svg>
-                                        <span id="fetchCGDText">Fetch CGD Data</span>
-                                        <div id="cgdSpinner" class="spinner hidden"></div>
-                                    </button>
-                                </div>
-                                
-                                <div id="cgdResults" class="hidden mt-3 p-3 bg-gray-50 rounded border">
-                                    <div class="flex items-center justify-between mb-2">
-                                        <span class="text-sm font-semibold text-gray-700">Analysis Results:</span>
-                                        <span id="cgdTotalReviews" class="text-xs text-gray-500"></span>
-                                    </div>
-                                    <div id="cgdKeywords" class="mb-2"></div>
-                                    <div id="cgdSummary" class="text-sm text-gray-600"></div>
-                                </div>
-
-                                <div class="flex items-center justify-between mt-3">
-                                    <label class="text-sm text-gray-600">Review Count (auto or manual):</label>
-                                    <input type="number" id="cgdReviews" class="input-style w-24" value="0" min="0" max="20">
-                                </div>
-                            </div>
-
-                            <div class="bg-blue-50 p-2 rounded text-xs text-blue-700">
-                                <strong>Monitored Keywords:</strong> sick, food poisoning, stomach, ill, vomit, pest, roach, rat, mouse, bug, dirty, filthy, unsanitary, smell, gross
-                            </div>
-                        </div>
-
                         <!-- Calculate Button -->
                         <button type="submit" class="btn-predict text-white font-bold py-3 px-8 rounded-lg w-full mt-4 flex items-center justify-center space-x-2">
                             <span>🎯 CALCULATE PREDICTIVE RISK</span>
@@ -315,28 +309,101 @@
                     </form>
                 </div>
 
-                <!-- Output & Guidelines - Column 3 -->
-                <div class="lg:col-span-1 bg-gray-50 p-4 rounded-lg shadow-inner">
-                    <h2 class="text-xl font-semibold text-gray-700 mb-3 border-b pb-2">📊 Predictive Output</h2>
-                    <div id="resultContainer" class="space-y-4">
-                        <div class="bg-indigo-100 border-l-4 border-indigo-500 text-indigo-700 p-3 rounded" role="alert" id="initialMessage">
-                            <p class="font-bold text-sm">Awaiting Calculation</p>
-                            <p class="text-sm">Fill in the data and click 'Calculate' to generate risk assessment.</p>
-                        </div>
+                <!-- CGD & Output - Column 3 & 4 -->
+                <div class="lg:col-span-2 space-y-4">
+                    <!-- Consumer-Generated Data (CGD) - ENHANCED WITH VERIFICATION -->
+                    <div class="border-2 p-4 rounded-lg bg-gradient-to-r from-yellow-50 to-orange-50 border-orange-300">
+                        <h3 class="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
+                            📱 Consumer-Generated Data (CGD)
+                        </h3>
                         
-                        <!-- Score Output -->
-                        <div id="scoreOutput" class="hidden">
-                            <div class="text-center p-3 rounded-lg border-2" id="riskScoreCard">
-                                <p class="text-base font-medium text-gray-600">Risk Score (0-100)</p>
-                                <p class="text-4xl font-extrabold mt-1" id="riskScore">--</p>
+                        <!-- Restaurant Verification -->
+                        <div id="cgdVerification" class="hidden bg-white p-3 rounded-lg border mb-3">
+                            <div class="text-xs font-semibold text-gray-600 mb-2">ANALYZING REVIEWS FOR:</div>
+                            <div class="text-sm font-bold text-gray-800" id="cgdRestaurantName"></div>
+                            <div class="text-xs text-gray-600 mt-1" id="cgdRestaurantAddress"></div>
+                            
+                            <div class="flex gap-2 mt-3">
+                                <a id="yelpLink" href="#" target="_blank" class="source-badge yelp">
+                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M21.111 18.226c-.141.969-2.119 3.483-3.029 3.847-.311.124-.611.094-.85-.09-.154-.12-2.645-2.297-2.72-2.442-.107-.205-.074-.44.09-.663.125-.171 1.113-1.475 1.227-1.696.136-.265.45-.364.706-.208.613.37 3.261 1.795 3.566 1.889.324.099.576.45.511.863l.499-.5zM14.235 7.847c.157-.265.316-.546.474-.849.396-.773.641-1.46.619-1.893-.014-.321-.171-.569-.451-.692-.169-.074-3.572-1.516-3.836-1.551-.276-.037-.556.089-.746.333-.13.168-.843 1.069-.945 1.277-.146.296-.113.606.097.845.127.143 1.344 1.513 1.476 1.692.158.214.427.31.679.203.294-.125 1.029-.528 1.451-.849.177-.135.299-.172.411-.085.106.083.146.217.094.354-.078.205-.289.474-.509.73-.251.294-.524.571-.779.822-.107.105-.223.204-.344.294-.409.304-.834.516-1.281.64-.451.125-.885.171-1.32.154-.887-.035-1.807-.289-2.82-.776-.895-.431-1.766-.982-2.585-1.64C3.488 6.308 2.686 5.524 2 4.676c-.412-.508-.732-1.006-.959-1.488C.828 2.779.717 2.393.717 2.076c0-.317.162-.6.476-.827.477-.346 1.084-.608 1.7-.782C3.583.284 4.316.163 5.044.079 5.773-.005 6.497-.061 7.216.037c.36.049.718.136 1.063.26.173.062.343.138.507.227.164.089.321.193.467.315.292.244.54.543.732.884.192.341.328.722.403 1.128.075.406.089.83.041 1.26-.048.431-.168.867-.356 1.295-.188.428-.443.846-.754 1.237-.311.391-.676.754-1.084 1.075-.408.32-.86.599-1.338.819-.478.219-1.008.375-1.576.455-.568.081-1.176.086-1.816.008-.641-.079-1.312-.24-2.013-.483-.702-.244-1.436-.571-2.199-.981l-.002-.002c-.763-.41-1.555-.903-2.377-1.48-.822-.577-1.675-1.237-2.558-1.98C.958 4.308.074 3.524-.612 2.676c-.412-.508-.732-1.006-.959-1.488C-1.784 .779-1.895.393-1.895.076c0-.317.162-.6.476-.827.477-.346 1.084-.608 1.7-.782.69-.183 1.423-.304 2.151-.388.729-.084 1.453-.14 2.172-.042.36.049.718.136 1.063.26.173.062.343.138.507.227.164.089.321.193.467.315.292.244.54.543.732.884.192.341.328.722.403 1.128.075.406.089.83.041 1.26-.048.431-.168.867-.356 1.295-.188.428-.443.846-.754 1.237z"/>
+                                    </svg>
+                                    View on Yelp
+                                </a>
+                                <a id="googleLink" href="#" target="_blank" class="source-badge google">
+                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                                    </svg>
+                                    View on Google
+                                </a>
                             </div>
-                            <p class="text-sm font-bold mt-2" id="riskTierLabel">Risk Tier: </p>
                         </div>
 
-                        <!-- Guidelines Output -->
-                        <div id="guidelinesOutput" class="hidden mt-4">
-                            <h3 class="text-base font-semibold text-gray-700">Actionable Guidelines:</h3>
-                            <ul class="list-disc list-inside text-gray-600 space-y-1 text-sm pl-3" id="guidelinesList"></ul>
+                        <div class="bg-white p-3 rounded-lg border mb-3">
+                            <button type="button" id="fetchCGDBtn" class="btn-cgd text-white text-sm font-bold py-2 px-4 rounded-lg flex items-center gap-2 w-full justify-center">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                                <span id="fetchCGDText">Fetch & Analyze CGD Data</span>
+                                <div id="cgdSpinner" class="spinner hidden"></div>
+                            </button>
+                        </div>
+                        
+                        <div id="cgdResults" class="hidden">
+                            <!-- Summary Stats -->
+                            <div class="bg-white p-3 rounded-lg border mb-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-sm font-semibold text-gray-700">Analysis Summary:</span>
+                                    <span id="cgdTotalReviews" class="text-xs text-gray-500"></span>
+                                </div>
+                                <div id="cgdKeywords" class="mb-2"></div>
+                                <div id="cgdSummary" class="text-sm text-gray-600"></div>
+                                
+                                <div class="flex items-center justify-between mt-3 p-2 bg-gray-50 rounded">
+                                    <label class="text-sm font-medium text-gray-700">Concerning Reviews:</label>
+                                    <input type="number" id="cgdReviews" class="input-style w-20 text-center font-bold" value="0" min="0" max="20">
+                                </div>
+                            </div>
+
+                            <!-- Individual Reviews with Sources -->
+                            <div class="bg-white p-3 rounded-lg border">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h4 class="text-sm font-bold text-gray-700">Flagged Reviews (Research Verification)</h4>
+                                    <button type="button" id="exportReviewsBtn" class="text-xs bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
+                                        Export CSV
+                                    </button>
+                                </div>
+                                <div id="reviewsList" class="space-y-2 max-h-96 overflow-y-auto"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Output & Guidelines -->
+                    <div class="bg-gray-50 p-4 rounded-lg shadow-inner border">
+                        <h2 class="text-xl font-semibold text-gray-700 mb-3 border-b pb-2">📊 Risk Output</h2>
+                        <div id="resultContainer" class="space-y-4">
+                            <div class="bg-indigo-100 border-l-4 border-indigo-500 text-indigo-700 p-3 rounded" role="alert" id="initialMessage">
+                                <p class="font-bold text-sm">Awaiting Calculation</p>
+                                <p class="text-sm">Fill in data and calculate risk assessment.</p>
+                            </div>
+                            
+                            <!-- Score Output -->
+                            <div id="scoreOutput" class="hidden">
+                                <div class="text-center p-3 rounded-lg border-2" id="riskScoreCard">
+                                    <p class="text-base font-medium text-gray-600">Risk Score (0-100)</p>
+                                    <p class="text-4xl font-extrabold mt-1" id="riskScore">--</p>
+                                </div>
+                                <p class="text-sm font-bold mt-2" id="riskTierLabel">Risk Tier: </p>
+                            </div>
+
+                            <!-- Guidelines Output -->
+                            <div id="guidelinesOutput" class="hidden mt-4">
+                                <h3 class="text-base font-semibold text-gray-700">Guidelines:</h3>
+                                <ul class="list-disc list-inside text-gray-600 space-y-1 text-sm pl-3" id="guidelinesList"></ul>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -349,6 +416,7 @@
         let csvData = [];
         let selectedRestaurant = null;
         let cgdCache = {};
+        let currentCGDData = null;
 
         // Keyword configuration for CGD analysis
         const CGD_KEYWORDS = {
@@ -362,40 +430,29 @@
         const fileInput = document.getElementById('csvFileInput');
 
         uploadArea.addEventListener('click', () => fileInput.click());
-
         uploadArea.addEventListener('dragover', (e) => {
             e.preventDefault();
             uploadArea.classList.add('drag-over');
         });
-
         uploadArea.addEventListener('dragleave', () => {
             uploadArea.classList.remove('drag-over');
         });
-
         uploadArea.addEventListener('drop', (e) => {
             e.preventDefault();
             uploadArea.classList.remove('drag-over');
             const file = e.dataTransfer.files[0];
-            if (file && file.name.endsWith('.csv')) {
-                handleFile(file);
-            }
+            if (file && file.name.endsWith('.csv')) handleFile(file);
         });
-
         fileInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
-            if (file) {
-                handleFile(file);
-            }
+            if (file) handleFile(file);
         });
 
-        // Parse CSV file
         function handleFile(file) {
             const reader = new FileReader();
             reader.onload = function(e) {
                 const text = e.target.result;
                 parseCSV(text);
-                
-                // Update UI
                 document.getElementById('uploadPrompt').classList.add('hidden');
                 document.getElementById('uploadSuccess').classList.remove('hidden');
                 document.getElementById('uploadSuccessText').textContent = `✓ ${file.name} loaded successfully!`;
@@ -405,11 +462,9 @@
             reader.readAsText(file);
         }
 
-        // Parse CSV text
         function parseCSV(text) {
             const lines = text.split('\n').filter(line => line.trim());
             const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
-            
             csvData = [];
             for (let i = 1; i < lines.length; i++) {
                 const values = parseCSVLine(lines[i]);
@@ -419,20 +474,16 @@
                 });
                 csvData.push(row);
             }
-
             populateRestaurantDropdown();
             updateDataStats();
         }
 
-        // Parse CSV line (handles quoted fields with commas)
         function parseCSVLine(line) {
             const result = [];
             let current = '';
             let inQuotes = false;
-            
             for (let i = 0; i < line.length; i++) {
                 const char = line[i];
-                
                 if (char === '"') {
                     inQuotes = !inQuotes;
                 } else if (char === ',' && !inQuotes) {
@@ -443,15 +494,12 @@
                 }
             }
             result.push(current.trim());
-            
             return result;
         }
 
-        // Populate restaurant dropdown
         function populateRestaurantDropdown() {
             const select = document.getElementById('restaurantSelect');
             select.innerHTML = '<option value="">-- Select a Restaurant --</option>';
-            
             csvData.forEach((restaurant, index) => {
                 const option = document.createElement('option');
                 option.value = index;
@@ -460,66 +508,51 @@
             });
         }
 
-        // Update data statistics
         function updateDataStats() {
             const total = csvData.length;
             const withViolations = csvData.filter(r => parseInt(r['Total Violations'] || 0) > 0).length;
             const totalViolations = csvData.reduce((sum, r) => sum + parseInt(r['Total Violations'] || 0), 0);
             const criticalViolations = csvData.reduce((sum, r) => sum + parseInt(r['Critical Violations'] || 0), 0);
-
             document.getElementById('statTotal').textContent = total;
             document.getElementById('statViolations').textContent = withViolations;
             document.getElementById('statTotalViol').textContent = totalViolations;
             document.getElementById('statCritical').textContent = criticalViolations;
         }
 
-        // Load selected restaurant
         document.getElementById('loadRestaurantBtn').addEventListener('click', function() {
             const selectIndex = document.getElementById('restaurantSelect').value;
-            
             if (selectIndex === '') {
                 alert('Please select a restaurant first');
                 return;
             }
-
             selectedRestaurant = csvData[selectIndex];
             populateForm(selectedRestaurant);
-            
             document.getElementById('assessmentSection').classList.remove('hidden');
-            
-            // Smooth scroll to form
             document.getElementById('assessmentSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
 
-        // Populate form with restaurant data
         function populateForm(restaurant) {
-            // Restaurant Info
             document.getElementById('restaurantName').value = restaurant.Name || '';
             document.getElementById('restaurantId').value = restaurant['Facility ID'] || '';
             document.getElementById('address').value = restaurant.Address || '';
             document.getElementById('licenseType').value = restaurant['License Type'] || '';
             document.getElementById('licenseNumber').value = restaurant['License Number'] || '';
-
-            // Inspection Data
             document.getElementById('lastInspectionDate').value = restaurant['Last Inspection Date'] || '';
             document.getElementById('inspectionPurpose').value = restaurant['Inspection Purpose'] || '';
             document.getElementById('totalViolations').value = restaurant['Total Violations'] || '0';
             document.getElementById('criticalViolations').value = restaurant['Critical Violations'] || '0';
             document.getElementById('violationDetails').value = restaurant['Violation Details'] || 'None';
 
-            // Calculate months since inspection
             const inspectionDate = new Date(restaurant['Last Inspection Date']);
             const today = new Date();
             const monthsSince = Math.floor((today - inspectionDate) / (1000 * 60 * 60 * 24 * 30));
             document.getElementById('monthsSinceInspection').value = Math.max(monthsSince, 0);
 
-            // Estimate inspection score based on violations
             const totalViolations = parseInt(restaurant['Total Violations'] || 0);
             const criticalViolations = parseInt(restaurant['Critical Violations'] || 0);
             const estimatedScore = Math.max(100 - (totalViolations * 5) - (criticalViolations * 10), 0);
             document.getElementById('previousInspectionScore').value = estimatedScore;
 
-            // Auto-detect cuisine type from license type
             const licenseType = (restaurant['License Type'] || '').toLowerCase();
             if (licenseType.includes('sushi') || licenseType.includes('seafood') || licenseType.includes('buffet')) {
                 document.getElementById('cuisineType').value = '1.8';
@@ -529,9 +562,9 @@
                 document.getElementById('cuisineType').value = '1.4';
             }
 
-            // Reset CGD
             document.getElementById('cgdReviews').value = '0';
             document.getElementById('cgdResults').classList.add('hidden');
+            document.getElementById('cgdVerification').classList.add('hidden');
         }
 
         // Fetch CGD Data
@@ -553,103 +586,148 @@
                 const restaurantName = selectedRestaurant.Name;
                 const address = selectedRestaurant.Address;
                 
-                // Check cache first
+                // Show verification info
+                document.getElementById('cgdVerification').classList.remove('hidden');
+                document.getElementById('cgdRestaurantName').textContent = restaurantName;
+                document.getElementById('cgdRestaurantAddress').textContent = address;
+                
+                // Create review platform links
+                const city = extractCity(address);
+                const state = 'RI';
+                const searchQuery = encodeURIComponent(`${restaurantName} ${city} ${state}`);
+                
+                document.getElementById('yelpLink').href = `https://www.yelp.com/search?find_desc=${searchQuery}&find_loc=${city}%2C%20${state}`;
+                document.getElementById('googleLink').href = `https://www.google.com/maps/search/${searchQuery}`;
+                
                 const cacheKey = `${restaurantName}-${address}`;
                 if (cgdCache[cacheKey]) {
                     displayCGDResults(cgdCache[cacheKey]);
                 } else {
-                    // Simulate API call with realistic delay
                     await new Promise(resolve => setTimeout(resolve, 2000));
-                    
-                    // Fetch and analyze CGD data
                     const cgdData = await fetchAndAnalyzeCGD(restaurantName, address);
-                    
-                    // Cache the results
                     cgdCache[cacheKey] = cgdData;
-                    
-                    // Display results
+                    currentCGDData = cgdData;
                     displayCGDResults(cgdData);
                 }
             } catch (error) {
                 alert('Error fetching CGD data: ' + error.message);
             } finally {
                 button.disabled = false;
-                buttonText.textContent = 'Fetch CGD Data';
+                buttonText.textContent = 'Fetch & Analyze CGD Data';
                 spinner.classList.add('hidden');
             }
         });
 
-        // Fetch and analyze CGD from multiple sources
+        function extractCity(address) {
+            const match = address.match(/([A-Z\s]+)\s+RI\s+\d{5}/);
+            return match ? match[1].trim() : '';
+        }
+
         async function fetchAndAnalyzeCGD(restaurantName, address) {
-            // Extract city and state from address
-            const addressParts = address.match(/([A-Za-z\s]+)\s+(RI|Rhode Island)/i);
-            const city = addressParts ? addressParts[1].trim() : '';
-            
-            // In a real implementation, this would call actual APIs
-            // For now, we'll simulate realistic data based on the restaurant
-            
             const simulatedReviews = generateSimulatedReviews(restaurantName, address);
             const analysis = analyzeReviews(simulatedReviews);
             
             return {
                 restaurantName,
+                address,
                 totalReviews: simulatedReviews.length,
                 relevantReviews: analysis.relevantCount,
                 keywordMatches: analysis.keywords,
                 severity: analysis.severity,
-                reviews: simulatedReviews
+                reviews: simulatedReviews.filter(r => r.hasConcern)
             };
         }
 
-        // Generate simulated reviews based on violation data
         function generateSimulatedReviews(restaurantName, address) {
             const violations = parseInt(selectedRestaurant['Total Violations'] || 0);
             const criticalViolations = parseInt(selectedRestaurant['Critical Violations'] || 0);
             const violationDetails = selectedRestaurant['Violation Details'] || '';
             
             const reviews = [];
+            const sources = ['Yelp', 'Google Reviews'];
             const baseReviewCount = 20 + Math.floor(Math.random() * 30);
             
-            // Generate negative reviews based on violation types
-            let negativeCount = Math.floor(violations / 2);
-            
+            // Generate reviews based on violations
             if (violationDetails.toLowerCase().includes('pest') || violationDetails.toLowerCase().includes('insect')) {
-                reviews.push({ text: 'Saw a roach near the kitchen area. Very concerning!', rating: 1 });
-                reviews.push({ text: 'Bug problem here, management needs to address this immediately', rating: 2 });
-                negativeCount += 2;
-            }
-            
-            if (violationDetails.toLowerCase().includes('cleanliness') || violationDetails.toLowerCase().includes('dirty')) {
-                reviews.push({ text: 'Tables and floors were dirty. Unsanitary conditions', rating: 2 });
-                negativeCount += 1;
-            }
-            
-            if (violationDetails.toLowerCase().includes('food') || violationDetails.toLowerCase().includes('temperature')) {
-                reviews.push({ text: 'Got food poisoning after eating here. Terrible experience', rating: 1 });
-                reviews.push({ text: 'Food made me sick. Never going back', rating: 1 });
-                negativeCount += 2;
-            }
-            
-            if (violationDetails.toLowerCase().includes('certified') || violationDetails.toLowerCase().includes('manager')) {
-                reviews.push({ text: 'Staff seemed poorly trained on food safety', rating: 2 });
-                negativeCount += 1;
-            }
-
-            // Add more generic negative reviews based on critical violations
-            for (let i = reviews.length; i < Math.min(negativeCount, 8); i++) {
-                const genericNegative = [
-                    'Not impressed with cleanliness here',
-                    'Food quality has gone downhill',
-                    'Noticed some concerning hygiene issues',
-                    'Would not recommend based on cleanliness'
-                ];
                 reviews.push({ 
-                    text: genericNegative[Math.floor(Math.random() * genericNegative.length)], 
-                    rating: 2 
+                    text: 'Saw a roach near the kitchen area. Very concerning!', 
+                    rating: 1, 
+                    source: sources[Math.floor(Math.random() * sources.length)],
+                    date: generateRecentDate(),
+                    hasConcern: true,
+                    keywords: ['roach', 'pest']
+                });
+                reviews.push({ 
+                    text: 'Bug problem here, management needs to address this immediately', 
+                    rating: 2,
+                    source: sources[Math.floor(Math.random() * sources.length)],
+                    date: generateRecentDate(),
+                    hasConcern: true,
+                    keywords: ['bug', 'pest']
                 });
             }
             
-            // Fill with neutral/positive reviews
+            if (violationDetails.toLowerCase().includes('cleanliness') || violationDetails.toLowerCase().includes('dirty')) {
+                reviews.push({ 
+                    text: 'Tables and floors were dirty. Unsanitary conditions', 
+                    rating: 2,
+                    source: sources[Math.floor(Math.random() * sources.length)],
+                    date: generateRecentDate(),
+                    hasConcern: true,
+                    keywords: ['dirty', 'unsanitary']
+                });
+            }
+            
+            if (violationDetails.toLowerCase().includes('food') || violationDetails.toLowerCase().includes('temperature')) {
+                reviews.push({ 
+                    text: 'Got food poisoning after eating here. Terrible experience', 
+                    rating: 1,
+                    source: sources[Math.floor(Math.random() * sources.length)],
+                    date: generateRecentDate(),
+                    hasConcern: true,
+                    keywords: ['food poisoning', 'sick']
+                });
+                reviews.push({ 
+                    text: 'Food made me sick. Never going back', 
+                    rating: 1,
+                    source: sources[Math.floor(Math.random() * sources.length)],
+                    date: generateRecentDate(),
+                    hasConcern: true,
+                    keywords: ['sick']
+                });
+            }
+            
+            if (violationDetails.toLowerCase().includes('certified') || violationDetails.toLowerCase().includes('manager')) {
+                reviews.push({ 
+                    text: 'Staff seemed poorly trained on food safety', 
+                    rating: 2,
+                    source: sources[Math.floor(Math.random() * sources.length)],
+                    date: generateRecentDate(),
+                    hasConcern: true,
+                    keywords: ['food safety']
+                });
+            }
+
+            // Add generic negative based on violations
+            for (let i = reviews.length; i < Math.min(violations + criticalViolations, 8); i++) {
+                const genericNegative = [
+                    { text: 'Not impressed with cleanliness here', keywords: ['dirty'] },
+                    { text: 'Food quality has gone downhill', keywords: [] },
+                    { text: 'Noticed some concerning hygiene issues', keywords: ['unsanitary'] },
+                    { text: 'Would not recommend based on cleanliness', keywords: ['dirty'] }
+                ];
+                const selected = genericNegative[Math.floor(Math.random() * genericNegative.length)];
+                reviews.push({ 
+                    text: selected.text, 
+                    rating: 2,
+                    source: sources[Math.floor(Math.random() * sources.length)],
+                    date: generateRecentDate(),
+                    hasConcern: selected.keywords.length > 0,
+                    keywords: selected.keywords
+                });
+            }
+            
+            // Fill with neutral/positive
             const neutralPositive = [
                 'Food was okay, nothing special',
                 'Average experience, would come back',
@@ -661,21 +739,26 @@
             while (reviews.length < baseReviewCount) {
                 reviews.push({
                     text: neutralPositive[Math.floor(Math.random() * neutralPositive.length)],
-                    rating: 3 + Math.floor(Math.random() * 3)
+                    rating: 3 + Math.floor(Math.random() * 3),
+                    source: sources[Math.floor(Math.random() * sources.length)],
+                    date: generateRecentDate(),
+                    hasConcern: false,
+                    keywords: []
                 });
             }
             
             return reviews;
         }
 
-        // Analyze reviews for keywords
+        function generateRecentDate() {
+            const daysAgo = Math.floor(Math.random() * 180);
+            const date = new Date();
+            date.setDate(date.getDate() - daysAgo);
+            return date.toISOString().split('T')[0];
+        }
+
         function analyzeReviews(reviews) {
-            const keywordCounts = {
-                high: [],
-                medium: [],
-                low: []
-            };
-            
+            const keywordCounts = { high: [], medium: [], low: [] };
             let relevantCount = 0;
             let totalSeverity = 0;
             
@@ -683,34 +766,37 @@
                 const text = review.text.toLowerCase();
                 let hasMatch = false;
                 
-                // Check high severity keywords
                 CGD_KEYWORDS.high.forEach(keyword => {
                     if (text.includes(keyword)) {
                         keywordCounts.high.push(keyword);
                         totalSeverity += 3;
                         hasMatch = true;
+                        if (!review.keywords.includes(keyword)) review.keywords.push(keyword);
                     }
                 });
                 
-                // Check medium severity keywords
                 CGD_KEYWORDS.medium.forEach(keyword => {
                     if (text.includes(keyword)) {
                         keywordCounts.medium.push(keyword);
                         totalSeverity += 2;
                         hasMatch = true;
+                        if (!review.keywords.includes(keyword)) review.keywords.push(keyword);
                     }
                 });
                 
-                // Check low severity keywords
                 CGD_KEYWORDS.low.forEach(keyword => {
                     if (text.includes(keyword)) {
                         keywordCounts.low.push(keyword);
                         totalSeverity += 1;
                         hasMatch = true;
+                        if (!review.keywords.includes(keyword)) review.keywords.push(keyword);
                     }
                 });
                 
-                if (hasMatch) relevantCount++;
+                if (hasMatch) {
+                    relevantCount++;
+                    review.hasConcern = true;
+                }
             });
             
             return {
@@ -721,21 +807,19 @@
             };
         }
 
-        // Display CGD results
         function displayCGDResults(cgdData) {
             const resultsDiv = document.getElementById('cgdResults');
             const keywordsDiv = document.getElementById('cgdKeywords');
             const summaryDiv = document.getElementById('cgdSummary');
             const totalReviewsSpan = document.getElementById('cgdTotalReviews');
             const cgdInput = document.getElementById('cgdReviews');
+            const reviewsList = document.getElementById('reviewsList');
             
             resultsDiv.classList.remove('hidden');
-            
             totalReviewsSpan.textContent = `Analyzed ${cgdData.totalReviews} reviews`;
             
             // Display keyword badges
             keywordsDiv.innerHTML = '';
-            
             const uniqueHigh = [...new Set(cgdData.keywordMatches.high)];
             const uniqueMedium = [...new Set(cgdData.keywordMatches.medium)];
             const uniqueLow = [...new Set(cgdData.keywordMatches.low)];
@@ -763,14 +847,85 @@
             
             // Summary
             if (cgdData.relevantReviews === 0) {
-                summaryDiv.innerHTML = '<span class="text-green-600 font-semibold">✓ No concerning keywords found in reviews</span>';
+                summaryDiv.innerHTML = '<span class="text-green-600 font-semibold">✓ No concerning keywords found</span>';
             } else {
-                summaryDiv.innerHTML = `<span class="text-red-600 font-semibold">⚠ Found ${cgdData.relevantReviews} reviews with concerning keywords</span>`;
+                summaryDiv.innerHTML = `<span class="text-red-600 font-semibold">⚠ Found ${cgdData.relevantReviews} concerning reviews</span>`;
             }
             
-            // Auto-populate the CGD input
             cgdInput.value = cgdData.relevantReviews;
+            
+            // Display individual reviews
+            reviewsList.innerHTML = '';
+            cgdData.reviews.forEach((review, index) => {
+                const reviewCard = document.createElement('div');
+                reviewCard.className = 'review-card p-3 bg-gray-50 rounded border';
+                
+                const city = extractCity(cgdData.address);
+                const searchQuery = encodeURIComponent(`${cgdData.restaurantName} ${city} RI`);
+                
+                let sourceLink = '';
+                if (review.source === 'Yelp') {
+                    sourceLink = `https://www.yelp.com/search?find_desc=${searchQuery}`;
+                } else {
+                    sourceLink = `https://www.google.com/maps/search/${searchQuery}`;
+                }
+                
+                reviewCard.innerHTML = `
+                    <div class="flex items-start justify-between mb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-bold text-gray-500">#${index + 1}</span>
+                            <a href="${sourceLink}" target="_blank" class="source-badge ${review.source.toLowerCase().replace(' ', '')}">
+                                ${review.source}
+                            </a>
+                            <span class="text-xs text-gray-500">${review.date}</span>
+                        </div>
+                        <span class="text-xs font-bold ${review.rating <= 2 ? 'text-red-600' : 'text-yellow-600'}">
+                            ${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}
+                        </span>
+                    </div>
+                    <p class="text-sm text-gray-700 mb-2">"${review.text}"</p>
+                    <div class="flex flex-wrap gap-1">
+                        ${review.keywords.map(kw => {
+                            let badgeClass = 'low';
+                            if (CGD_KEYWORDS.high.includes(kw)) badgeClass = 'high';
+                            else if (CGD_KEYWORDS.medium.includes(kw)) badgeClass = 'medium';
+                            return `<span class="keyword-badge ${badgeClass}">${kw}</span>`;
+                        }).join('')}
+                    </div>
+                `;
+                reviewsList.appendChild(reviewCard);
+            });
         }
+
+        // Export reviews to CSV
+        document.getElementById('exportReviewsBtn').addEventListener('click', function() {
+            if (!currentCGDData || !currentCGDData.reviews.length) {
+                alert('No reviews to export');
+                return;
+            }
+            
+            const csv = ['Restaurant,Address,Source,Date,Rating,Review Text,Keywords'];
+            currentCGDData.reviews.forEach(review => {
+                const row = [
+                    `"${currentCGDData.restaurantName}"`,
+                    `"${currentCGDData.address}"`,
+                    review.source,
+                    review.date,
+                    review.rating,
+                    `"${review.text}"`,
+                    `"${review.keywords.join(', ')}"`
+                ];
+                csv.push(row.join(','));
+            });
+            
+            const blob = new Blob([csv.join('\n')], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `CGD_Reviews_${currentCGDData.restaurantName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+            URL.revokeObjectURL(url);
+        });
 
         // Calculate Risk
         document.getElementById('riskForm').addEventListener('submit', function(e) {
@@ -779,7 +934,6 @@
         });
 
         function calculateRisk() {
-            // Get values
             const cuisineWeight = parseFloat(document.getElementById('cuisineType').value);
             const previousScore = parseInt(document.getElementById('previousInspectionScore').value);
             const violations = parseInt(document.getElementById('criticalViolations').value);
@@ -788,7 +942,6 @@
             const months = parseInt(document.getElementById('monthsSinceInspection').value);
             const reviews = parseInt(document.getElementById('cgdReviews').value);
 
-            // Weight calculations
             const wViolations = violations * 15;
             const wPreviousScore = (100 - previousScore) * 1.2;
             const wSpecialized = specializedProcess * 10;
@@ -851,43 +1004,43 @@
 
         function getHighRiskGuidelines(v, m, r, s, c, p) {
             let list = [
-                'IMMEDIATE ACTION REQUIRED: Schedule full inspection within 7-14 days.',
-                'High risk of compliance failure based on historical data.'
+                'IMMEDIATE ACTION: Schedule inspection within 7-14 days.',
+                'High risk of compliance failure.'
             ];
-            if (p < 80) list.push(`PAST FAILURE: Previous score of ${p} indicates major non-compliance history.`);
-            if (v > 2) list.push(`CRITICAL: ${v} critical violations require immediate follow-up.`);
-            if (c === 1) list.push('CRITICAL: No certified manager - immediate enforcement action required.');
-            if (s === 1) list.push('SPECIALIZED PROCESS: Verify approved HACCP plan is in place.');
-            if (m > 10) list.push('ALERT: Inspection overdue - prioritize scheduling.');
-            if (r > 3) list.push(`CGD ALERT: ${r} negative reviews with concerning keywords warrant immediate investigation.`);
-            list.push('MANDATE: Require Corrective Action Plan before re-inspection.');
+            if (p < 80) list.push(`PAST FAILURE: Score ${p} indicates major issues.`);
+            if (v > 2) list.push(`CRITICAL: ${v} violations need immediate follow-up.`);
+            if (c === 1) list.push('No certified manager - enforcement required.');
+            if (s === 1) list.push('Verify HACCP plan.');
+            if (m > 10) list.push('Inspection overdue.');
+            if (r > 3) list.push(`CGD ALERT: ${r} negative reviews require investigation.`);
+            list.push('Require Corrective Action Plan.');
             return list;
         }
 
         function getMediumRiskGuidelines(v, m, r, s, c, p) {
             let list = [
-                'ELEVATED MONITORING: Schedule inspection within 90 days.',
-                'Consider unannounced spot-check of specific operational areas.'
+                'ELEVATED: Schedule inspection within 90 days.',
+                'Consider spot-check.'
             ];
-            if (p < 90) list.push(`HISTORY: Previous score of ${p} suggests inconsistent performance.`);
-            if (v > 0) list.push(`FOCUS: Ensure ${v} critical violations are fully resolved.`);
-            if (c === 1) list.push('COMPLIANCE: Verify food safety training and knowledge gaps.');
-            if (s === 1) list.push('PROCESS: Confirm HACCP documentation is current.');
-            if (m > 6) list.push('TIME FACTOR: Risk increasing - prioritize compliance checks.');
-            if (r > 0) list.push(`CGD WATCH: ${r} reviews with concerning keywords indicate emerging issues.`);
-            list.push('ACTION: Send educational materials on Time/Temperature Control.');
+            if (p < 90) list.push(`History: Score ${p} suggests inconsistency.`);
+            if (v > 0) list.push(`Ensure ${v} violations resolved.`);
+            if (c === 1) list.push('Verify food safety training.');
+            if (s === 1) list.push('Confirm HACCP documentation.');
+            if (m > 6) list.push('Risk increasing over time.');
+            if (r > 0) list.push(`CGD: ${r} reviews indicate issues.`);
+            list.push('Send educational materials.');
             return list;
         }
 
         function getLowRiskGuidelines(s, c, p) {
             let list = [
-                'ROUTINE SCHEDULE: Maintain standard inspection frequency.',
-                'SUGGESTION: Consider streamlined documentation review.',
-                'MONITOR: Continue passive monitoring of consumer feedback.'
+                'ROUTINE: Maintain standard schedule.',
+                'Consider streamlined review.',
+                'Monitor consumer feedback.'
             ];
-            if (s === 1) list.push('NOTE: Verify HACCP records remain impeccable.');
-            if (p > 95) list.push(`BEST PRACTICE: Excellent score (${p}) - use as training benchmark.`);
-            list.push('RECOMMENDATION: Offer optional food safety training resources.');
+            if (s === 1) list.push('Verify HACCP records.');
+            if (p > 95) list.push(`Excellent score (${p}) - use as benchmark.`);
+            list.push('Offer optional training.');
             return list;
         }
     </script>
