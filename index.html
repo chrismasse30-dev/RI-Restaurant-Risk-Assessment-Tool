@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"="width=device-width, initial-scale=1.0">
-    <title>RI Restaurant Risk Assessment Tool - Predictive Analytics</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RI Restaurant Risk Assessment Tool - Enhanced Predictive Analytics</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
@@ -150,8 +150,8 @@
 
         <!-- Header -->
         <header class="text-center mb-6">
-            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800">🏥 RI Restaurant Risk Assessment Tool</h1>
-            <p class="text-gray-500 mt-1 text-base">Predictive Analytics & Consumer Feedback Analysis</p>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800">🍽 RI Restaurant Risk Assessment Tool</h1>
+            <p class="text-gray-500 mt-1 text-base">Enhanced Predictive Analytics & Consumer Feedback Analysis</p>
         </header>
 
         <!-- CSV Upload Section -->
@@ -286,12 +286,127 @@
                             </div>
                         </div>
 
-                        <!-- Risk Factors -->
-                        <div class="bg-red-50 p-4 rounded-lg border border-red-200">
-                            <h3 class="text-sm font-bold text-gray-700 mb-3">⚠️ Risk Factors</h3>
+                        <!-- NEW: Utilities & Infrastructure Section -->
+                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                            <h3 class="text-sm font-bold text-gray-700 mb-3">💧 Utilities & Infrastructure</h3>
+                            
+                            <div class="mb-3">
+                                <label class="block text-xs font-bold text-gray-700 mb-1">💧 Water Supply System</label>
+                                <select id="waterSupply" class="input-style">
+                                    <option value="municipal">Municipal Water Supply</option>
+                                    <option value="well">Well Water (Private On-Site)</option>
+                                </select>
+                                <p class="text-xs text-gray-500 mt-1">⚠️ Well water requires RIDOH Division of Drinking Water Quality approval</p>
+                            </div>
 
                             <div>
-                                <label for="cuisineType" class="block text-sm font-medium text-gray-700 mb-1">Cuisine Type</label>
+                                <label class="block text-xs font-bold text-gray-700 mb-1">🚽 Sewage/Wastewater System</label>
+                                <select id="sewageSystem" class="input-style">
+                                    <option value="municipal">Municipal Sewer</option>
+                                    <option value="septic">Septic/OWTS (On-Site)</option>
+                                </select>
+                                <p class="text-xs text-gray-500 mt-1">⚠️ Septic systems require DEM approval and may limit seating capacity</p>
+                            </div>
+                        </div>
+
+                        <!-- NEW: Operations & Services Section -->
+                        <div class="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                            <h3 class="text-sm font-bold text-gray-700 mb-3">🏪 Operations & Services</h3>
+                            
+                            <div class="mb-3">
+                                <label class="block text-xs font-bold text-gray-700 mb-1">🏪 Establishment Type</label>
+                                <select id="establishmentType" class="input-style">
+                                    <option value="permanent">Permanent Facility</option>
+                                    <option value="mobile">Mobile Food Service (Food Truck)</option>
+                                    <option value="temporary">Temporary Event (Festival/Fair)</option>
+                                </select>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-3 mb-3">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-700 mb-1">🔥 Prepares Hot Food?</label>
+                                    <select id="hotFoodPrep" class="input-style">
+                                        <option value="no">No</option>
+                                        <option value="yes">Yes</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-700 mb-1">📊 Daily Volume</label>
+                                    <select id="dailyVolume" class="input-style">
+                                        <option value="low">Low (<50 meals/day)</option>
+                                        <option value="medium">Medium (50-199)</option>
+                                        <option value="high">High (200+ meals/day)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="block text-xs font-bold text-gray-700 mb-1">🥩 Handles Potentially Hazardous Foods (TCS)?</label>
+                                <select id="phfFoods" class="input-style">
+                                    <option value="no">No - Packaged/Shelf-Stable Only</option>
+                                    <option value="yes">Yes - Meat, Dairy, Eggs, Cut Produce, etc.</option>
+                                </select>
+                                <p class="text-xs text-gray-500 mt-1">TCS = Time/Temperature Control for Safety</p>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 mb-1">👴 Serves Vulnerable Populations?</label>
+                                <select id="vulnerablePopulation" class="input-style">
+                                    <option value="no">No - General Public</option>
+                                    <option value="yes">Yes - Elderly/Immunocompromised</option>
+                                </select>
+                                <p class="text-xs text-gray-500 mt-1">⚠️ Nursing homes, assisted living, hospitals MUST have certified food safety manager</p>
+                            </div>
+                        </div>
+
+                        <!-- NEW: Food Safety & Management Section -->
+                        <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                            <h3 class="text-sm font-bold text-gray-700 mb-3">👨‍🍳 Food Safety & Management</h3>
+                            
+                            <div class="mb-3">
+                                <label class="block text-xs font-bold text-gray-700 mb-1">👨‍🍳 Certified Food Safety Manager</label>
+                                <select id="foodSafetyManager" class="input-style">
+                                    <option value="yes">Yes - Has Certified Manager</option>
+                                    <option value="no">No - No Certified Manager</option>
+                                    <option value="required">Required but Missing</option>
+                                </select>
+                                <p class="text-xs text-gray-500 mt-1">Required for: Hot food prep, potentially hazardous food, vulnerable populations</p>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 mb-2">🔬 Specialized Food Processes (Select all that apply)</label>
+                                <div class="space-y-2">
+                                    <label class="flex items-center">
+                                        <input type="checkbox" id="procSmoke" class="mr-2">
+                                        <span class="text-xs">Smoking/Curing (meat, fish)</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="checkbox" id="procROP" class="mr-2">
+                                        <span class="text-xs">Reduced Oxygen Packaging (ROP/Vacuum)</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="checkbox" id="procSousVide" class="mr-2">
+                                        <span class="text-xs">Sous Vide Cooking</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="checkbox" id="procAcidify" class="mr-2">
+                                        <span class="text-xs">Acidification (Pickling, Fermenting)</span>
+                                    </label>
+                                    <label class="flex items-center">
+                                        <input type="checkbox" id="procDry" class="mr-2">
+                                        <span class="text-xs">Drying Meat/Fish/Poultry</span>
+                                    </label>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-2">⚠️ These require HACCP plan and RIDOH variance/approval</p>
+                            </div>
+                        </div>
+
+                        <!-- Original Risk Factors -->
+                        <div class="bg-red-50 p-4 rounded-lg border border-red-200">
+                            <h3 class="text-sm font-bold text-gray-700 mb-3">⚠️ Additional Risk Factors</h3>
+
+                            <div>
+                                <label for="cuisineType" class="block text-xs font-medium text-gray-700 mb-1">Cuisine Type</label>
                                 <select id="cuisineType" class="input-style" required>
                                     <option value="1.0">Low Risk (Coffee, Bakery)</option>
                                     <option value="1.4" selected>Medium Risk (American, Pizza)</option>
@@ -300,30 +415,14 @@
                             </div>
 
                             <div class="mt-3">
-                                <label for="previousInspectionScore" class="block text-sm font-medium text-gray-700 mb-1">Previous Score (0-100)</label>
+                                <label for="previousInspectionScore" class="block text-xs font-medium text-gray-700 mb-1">Previous Score (0-100)</label>
                                 <input type="number" id="previousInspectionScore" class="input-style" value="85" min="0" max="100" required>
-                            </div>
-
-                            <div class="mt-3 flex items-center justify-between p-3 border rounded-lg bg-white">
-                                <label for="specializedProcess" class="text-sm font-medium text-gray-700">Specialized Processes?</label>
-                                <select id="specializedProcess" class="input-style w-40">
-                                    <option value="0" selected>No</option>
-                                    <option value="1">Yes (HACCP)</option>
-                                </select>
-                            </div>
-
-                            <div class="mt-3">
-                                <label for="certifiedManager" class="block text-sm font-medium text-gray-700 mb-1">Certified Manager</label>
-                                <select id="certifiedManager" class="input-style" required>
-                                    <option value="0" selected>On Site</option>
-                                    <option value="1">No Manager</option>
-                                </select>
                             </div>
                         </div>
 
                         <!-- Calculate Button -->
                         <button type="submit" class="btn-predict text-white font-bold py-3 px-8 rounded-lg w-full mt-4 flex items-center justify-center space-x-2">
-                            <span>🎯 CALCULATE PREDICTIVE RISK</span>
+                            <span>🎯 CALCULATE ENHANCED RISK ASSESSMENT</span>
                         </button>
                     </form>
                 </div>
@@ -468,6 +567,12 @@
                             <h3 class="text-sm font-bold text-gray-700 mb-3">Key Risk Indicators</h3>
                             <div id="riskIndicators" class="space-y-2 text-xs"></div>
                         </div>
+                    </div>
+
+                    <!-- Risk Factor Breakdown -->
+                    <div id="riskBreakdown" class="hidden bg-white p-4 rounded-lg border">
+                        <h3 class="text-sm font-semibold text-gray-700 mb-3">📋 Risk Factor Breakdown</h3>
+                        <div id="riskFactorsList" class="space-y-2"></div>
                     </div>
 
                     <!-- Guidelines -->
@@ -634,13 +739,10 @@
             document.getElementById('cgdRestaurantAddress').textContent = addr;
             
             const city = extractCity(addr);
-            
-            // Create Yelp business URL (format: /biz/restaurant-name-city)
             const yelpSlug = createYelpSlug(name);
             const citySlug = createYelpSlug(city);
             document.getElementById('yelpLink').href = `https://www.yelp.com/biz/${yelpSlug}-${citySlug}`;
             
-            // Google Maps search
             const q = encodeURIComponent(`${name} ${city} RI`);
             document.getElementById('googleLink').href = `https://www.google.com/maps/search/${q}`;
             
@@ -666,14 +768,11 @@
         }
 
         function createYelpSlug(name) {
-            // Convert restaurant/city name to Yelp URL slug format
-            // Examples: "FOSTER COUNTRY CLUB" -> "foster-country-club"
-            //           "McDonald's" -> "mcdonalds"
             return name.toLowerCase()
-                .replace(/'/g, '')              // Remove apostrophes
-                .replace(/[^a-z0-9\s]/g, '')    // Remove special characters
-                .replace(/\s+/g, '-')           // Replace spaces with hyphens
-                .replace(/-+/g, '-')            // Remove multiple hyphens
+                .replace(/'/g, '')
+                .replace(/[^a-z0-9\s]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/-+/g, '-')
                 .trim();
         }
 
@@ -725,13 +824,8 @@
         }
 
         function generateReviewerProfile(source) {
-            // Generate realistic reviewer profiles for verification
-            const firstNames = ['Sarah', 'Michael', 'Jennifer', 'David', 'Lisa', 'James', 'Maria', 'Robert', 'Patricia', 'John', 
-                               'Linda', 'William', 'Barbara', 'Richard', 'Susan', 'Joseph', 'Jessica', 'Thomas', 'Karen', 'Charles',
-                               'Flores', 'Chen', 'Kumar', 'Rodriguez', 'Kim', 'Patel', 'Martinez', 'Anderson', 'Taylor', 'Lee'];
-            const lastNames = ['Johnson', 'Smith', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Martinez', 'Lopez',
-                              'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin', 'Lee', 'Thompson', 'White',
-                              'Chen', 'Kumar', 'Patel', 'Rodriguez', 'Kim', 'Singh', 'Nguyen', 'Santos', 'Fernandez', 'Walsh'];
+            const firstNames = ['Sarah', 'Michael', 'Jennifer', 'David', 'Lisa', 'James', 'Maria', 'Robert', 'Patricia', 'John'];
+            const lastNames = ['Johnson', 'Smith', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Martinez', 'Lopez'];
             
             const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
             const lastInitial = lastNames[Math.floor(Math.random() * lastNames.length)].charAt(0);
@@ -741,7 +835,6 @@
             const photoCount = Math.floor(Math.random() * 100);
             
             if (source === 'Google Reviews') {
-                // Google style profile
                 const isLocalGuide = reviewCount > 20 && Math.random() > 0.4;
                 return {
                     name: name,
@@ -753,7 +846,6 @@
                         : `${name} • ${reviewCount} reviews · ${photoCount} photos`
                 };
             } else {
-                // Yelp style profile
                 const isElite = reviewCount > 50 && Math.random() > 0.6;
                 const friendCount = Math.floor(Math.random() * 300);
                 return {
@@ -825,7 +917,6 @@
             const list = document.getElementById('reviewsList');
             list.innerHTML = '';
             data.reviews.slice(0, 5).forEach((r, i) => {
-                // Create review link
                 const city = extractCity(data.address);
                 const yelpSlug = createYelpSlug(data.restaurantName);
                 const citySlug = createYelpSlug(city);
@@ -852,11 +943,9 @@
                 div.className = `p-3 bg-gray-50 rounded border-l-4 ${borderColor} ${bgColor} cursor-pointer transition-all text-xs`;
                 div.onclick = () => window.open(reviewLink, '_blank');
                 
-                // Badge HTML
                 const badgeHTML = r.reviewer.badge ? 
                     `<span class="ml-1 px-1.5 py-0.5 rounded text-xs font-bold ${r.source === 'Yelp' ? 'bg-yellow-400 text-yellow-900' : 'bg-blue-500 text-white'}">${r.reviewer.badge}</span>` : '';
                 
-                // Rating stars
                 const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
                 
                 div.innerHTML = `
@@ -917,62 +1006,281 @@
 
         document.getElementById('riskForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            calculateRisk();
+            calculateEnhancedRisk();
         });
 
-        function calculateRisk() {
+        function calculateEnhancedRisk() {
+            let score = 0;
+            let riskFactors = [];
+            
+            // Original factors
             const cw = parseFloat(document.getElementById('cuisineType').value);
             const ps = parseInt(document.getElementById('previousInspectionScore').value);
             const v = parseInt(document.getElementById('criticalViolations').value);
-            const sp = parseInt(document.getElementById('specializedProcess').value);
-            const cm = parseInt(document.getElementById('certifiedManager').value);
             const m = parseInt(document.getElementById('monthsSinceInspection').value);
             const r = parseInt(document.getElementById('cgdReviews').value);
 
+            // Original scoring
             const wV = v * 15;
             const wPS = (100 - ps) * 1.2;
-            const wSP = sp * 10;
-            const wCM = cm * 15;
             const wC = (cw - 1.0) * 8;
             const wM = Math.min(m / 3, 5) * 4;
             const wR = Math.min(r * 3, 20);
-
-            const raw = wV + wPS + wSP + wCM + wC + wM + wR;
-            const score = Math.min(Math.round(raw), 100);
-
-            displayResults(score, v, m, r, sp, cm, ps);
             
-            // Generate predictions
-            generatePredictions(score, v, m, r, sp, cm, ps, cw);
+            score += wV + wPS + wC + wM + wR;
+            
+            if (v > 0) riskFactors.push({ factor: 'Critical Violations', points: wV, level: 'HIGH' });
+            if (ps < 80) riskFactors.push({ factor: 'Low Previous Score', points: wPS, level: 'MEDIUM' });
+            if (r > 0) riskFactors.push({ factor: 'Negative CGD Reviews', points: wR, level: 'MEDIUM' });
+            
+            // NEW: Water Supply
+            const waterSupply = document.getElementById('waterSupply').value;
+            if (waterSupply === 'well') {
+                score += 15;
+                riskFactors.push({
+                    factor: 'Well Water Supply',
+                    points: 15,
+                    level: 'HIGH',
+                    note: 'Requires regular testing and RIDOH approval'
+                });
+            }
+            
+            // NEW: Sewage System
+            const sewageSystem = document.getElementById('sewageSystem').value;
+            if (sewageSystem === 'septic') {
+                score += 10;
+                riskFactors.push({
+                    factor: 'Septic/OWTS System',
+                    points: 10,
+                    level: 'MEDIUM',
+                    note: 'Requires DEM approval'
+                });
+            }
+            
+            // NEW: Vulnerable Population
+            const vulnerablePop = document.getElementById('vulnerablePopulation').value;
+            if (vulnerablePop === 'yes') {
+                score += 20;
+                riskFactors.push({
+                    factor: 'Serves Vulnerable Population',
+                    points: 20,
+                    level: 'CRITICAL',
+                    note: 'Elderly/immunocompromised - higher consequence risk'
+                });
+            }
+            
+            // NEW: Food Safety Manager
+            const fsmStatus = document.getElementById('foodSafetyManager').value;
+            if (fsmStatus === 'required') {
+                score += 25;
+                riskFactors.push({
+                    factor: 'Missing Required Food Safety Manager',
+                    points: 25,
+                    level: 'CRITICAL',
+                    note: 'Required for hot food/PHF preparation'
+                });
+            } else if (fsmStatus === 'no') {
+                score += 12;
+                riskFactors.push({
+                    factor: 'No Food Safety Manager',
+                    points: 12,
+                    level: 'HIGH',
+                    note: 'Consider if required for operations'
+                });
+            }
+            
+            // NEW: Specialized Processes
+            const specializedProcesses = [
+                {id: 'procSmoke', name: 'Smoking/Curing'},
+                {id: 'procROP', name: 'ROP/Vacuum Packaging'},
+                {id: 'procSousVide', name: 'Sous Vide'},
+                {id: 'procAcidify', name: 'Acidification'},
+                {id: 'procDry', name: 'Drying'}
+            ];
+            
+            specializedProcesses.forEach(proc => {
+                if (document.getElementById(proc.id).checked) {
+                    score += 15;
+                    riskFactors.push({
+                        factor: `Specialized Process: ${proc.name}`,
+                        points: 15,
+                        level: 'HIGH',
+                        note: 'Requires HACCP plan and variance'
+                    });
+                }
+            });
+            
+            // NEW: Establishment Type
+            const estType = document.getElementById('establishmentType').value;
+            if (estType === 'temporary') {
+                score += 8;
+                riskFactors.push({
+                    factor: 'Temporary Event Operation',
+                    points: 8,
+                    level: 'MEDIUM',
+                    note: 'Limited facilities, variable conditions'
+                });
+            } else if (estType === 'mobile') {
+                score += 5;
+                riskFactors.push({
+                    factor: 'Mobile Food Service',
+                    points: 5,
+                    level: 'MEDIUM',
+                    note: 'Limited space, variable locations'
+                });
+            }
+            
+            // NEW: Hot Food Prep
+            if (document.getElementById('hotFoodPrep').value === 'yes') {
+                score += 5;
+                riskFactors.push({
+                    factor: 'Hot Food Preparation',
+                    points: 5,
+                    level: 'MEDIUM',
+                    note: 'Time/temperature control critical'
+                });
+            }
+            
+            // NEW: PHF Foods
+            if (document.getElementById('phfFoods').value === 'yes') {
+                score += 10;
+                riskFactors.push({
+                    factor: 'Potentially Hazardous Foods',
+                    points: 10,
+                    level: 'HIGH',
+                    note: 'Requires strict time/temp control'
+                });
+            }
+            
+            // NEW: Daily Volume
+            const volume = document.getElementById('dailyVolume').value;
+            if (volume === 'high') {
+                score += 6;
+                riskFactors.push({
+                    factor: 'High Daily Volume (200+ meals)',
+                    points: 6,
+                    level: 'MEDIUM',
+                    note: 'Higher exposure if contamination occurs'
+                });
+            } else if (volume === 'medium') {
+                score += 2;
+                riskFactors.push({
+                    factor: 'Medium Daily Volume',
+                    points: 2,
+                    level: 'LOW',
+                    note: ''
+                });
+            }
+            
+            const finalScore = Math.min(Math.round(score), 100);
+            
+            displayResults(finalScore, v, m, r, riskFactors);
+            displayRiskFactorBreakdown(riskFactors, finalScore);
+            generatePredictions(finalScore, v, m, r, fsmStatus, ps, cw);
         }
 
-        function displayResults(score, v, m, r, sp, cm, ps) {
+        function displayRiskFactorBreakdown(riskFactors, totalScore) {
+            document.getElementById('riskBreakdown').classList.remove('hidden');
+            const list = document.getElementById('riskFactorsList');
+            list.innerHTML = '';
+            
+            // Sort by points descending
+            riskFactors.sort((a, b) => b.points - a.points);
+            
+            riskFactors.forEach(rf => {
+                const div = document.createElement('div');
+                const levelColors = {
+                    'CRITICAL': 'bg-red-100 border-red-300 text-red-800',
+                    'HIGH': 'bg-orange-100 border-orange-300 text-orange-800',
+                    'MEDIUM': 'bg-yellow-100 border-yellow-300 text-yellow-800',
+                    'LOW': 'bg-blue-100 border-blue-300 text-blue-800'
+                };
+                const color = levelColors[rf.level] || 'bg-gray-100 border-gray-300 text-gray-800';
+                
+                div.className = `p-2 rounded border ${color}`;
+                div.innerHTML = `
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs font-bold">${rf.factor}</span>
+                        <span class="text-xs font-extrabold">+${rf.points}</span>
+                    </div>
+                    ${rf.note ? `<p class="text-xs opacity-75">${rf.note}</p>` : ''}
+                `;
+                list.appendChild(div);
+            });
+            
+            // Add total
+            const totalDiv = document.createElement('div');
+            totalDiv.className = 'p-3 rounded border-2 border-gray-700 bg-gray-50 mt-2';
+            totalDiv.innerHTML = `
+                <div class="flex justify-between items-center">
+                    <span class="text-sm font-bold text-gray-800">TOTAL RISK SCORE</span>
+                    <span class="text-2xl font-extrabold text-gray-900">${totalScore}</span>
+                </div>
+            `;
+            list.appendChild(totalDiv);
+        }
+
+        function displayResults(score, v, m, r, riskFactors) {
             document.getElementById('initialMessage').classList.add('hidden');
             document.getElementById('scoreOutput').classList.remove('hidden');
             document.getElementById('guidelinesOutput').classList.remove('hidden');
             document.getElementById('riskScore').textContent = score;
 
-            let tier = '', cardClass = '', textClass = '', guidelines = [];
-            if (score >= 70) {
-                tier = 'High Risk';
+            let tier = '', cardClass = '', textClass = '', guidelines = [], priority = {};
+            
+            if (score >= 75) {
+                tier = 'URGENT PRIORITY';
                 cardClass = 'bg-red-50 border-red-500';
                 textClass = 'text-red-600';
-                guidelines = getHighRiskGuidelines(v, m, r, sp, cm, ps);
-            } else if (score >= 40) {
-                tier = 'Medium Risk';
+                priority = { level: 'URGENT', icon: '🔴', action: 'Inspect within 7 days' };
+                guidelines = [
+                    'IMMEDIATE INSPECTION REQUIRED within 7 days',
+                    'High probability of critical violations',
+                    'Consider enforcement action if patterns persist',
+                    'Require Corrective Action Plan',
+                    'Follow-up inspection mandatory'
+                ];
+            } else if (score >= 50) {
+                tier = 'HIGH PRIORITY';
+                cardClass = 'bg-orange-50 border-orange-500';
+                textClass = 'text-orange-600';
+                priority = { level: 'HIGH', icon: '🟠', action: 'Inspect within 30 days' };
+                guidelines = [
+                    'Schedule inspection within 30 days',
+                    'Multiple moderate risk factors present',
+                    'Monitor closely for emerging patterns',
+                    'Consider spot-check before full inspection'
+                ];
+            } else if (score >= 30) {
+                tier = 'MEDIUM PRIORITY';
                 cardClass = 'bg-yellow-50 border-yellow-500';
                 textClass = 'text-yellow-600';
-                guidelines = getMediumRiskGuidelines(v, m, r, sp, cm, ps);
+                priority = { level: 'MEDIUM', icon: '🟡', action: 'Inspect within 90 days' };
+                guidelines = [
+                    'Schedule inspection within 90 days',
+                    'Some risk factors present',
+                    'Continue passive monitoring',
+                    'Address violations from previous inspection'
+                ];
             } else {
-                tier = 'Low Risk';
+                tier = 'LOW PRIORITY';
                 cardClass = 'bg-green-50 border-green-500';
                 textClass = 'text-green-600';
-                guidelines = getLowRiskGuidelines(sp, cm, ps);
+                priority = { level: 'LOW', icon: '🟢', action: 'Routine cycle (6-12 months)' };
+                guidelines = [
+                    'Maintain routine inspection schedule',
+                    'Low risk profile',
+                    'Continue current practices',
+                    'Passive monitoring sufficient'
+                ];
             }
 
             document.getElementById('riskScoreCard').className = `text-center p-3 rounded-lg border-2 ${cardClass}`;
             document.getElementById('riskScore').className = `text-3xl font-extrabold mt-1 ${textClass}`;
-            document.getElementById('riskTierLabel').innerHTML = `Risk Tier: <span class="font-bold ${textClass}">${tier}</span>`;
+            document.getElementById('riskTierLabel').innerHTML = `
+                ${priority.icon} <span class="font-bold ${textClass}">${tier}</span><br>
+                <span class="text-xs text-gray-600">${priority.action}</span>
+            `;
 
             const list = document.getElementById('guidelinesList');
             list.innerHTML = '';
@@ -983,46 +1291,31 @@
             });
         }
 
-        function generatePredictions(score, v, m, r, sp, cm, ps, cw) {
+        function generatePredictions(score, v, m, r, fsmStatus, ps, cw) {
             document.getElementById('predictiveSection').classList.remove('hidden');
 
-            // Calculate violation probability (0-100%)
-            let baseProb = score * 0.85; // Base from current risk
-            
-            // Adjust for time decay
-            const timeFactor = Math.min(m / 12, 1.5); // More time = higher risk
+            let baseProb = score * 0.85;
+            const timeFactor = Math.min(m / 12, 1.5);
             baseProb += timeFactor * 10;
-            
-            // Adjust for trend
-            const trendFactor = v > 0 ? 1.2 : 0.8; // Recent violations = higher risk
+            const trendFactor = v > 0 ? 1.2 : 0.8;
             baseProb *= trendFactor;
-            
-            // Adjust for management
-            if (cm === 1) baseProb += 15; // No manager = much higher risk
-            if (sp === 1) baseProb += 10; // Complex processes = higher risk
-            
-            // Adjust for CGD
+            if (fsmStatus === 'required') baseProb += 15;
+            if (fsmStatus === 'no') baseProb += 8;
             baseProb += r * 2;
             
-            // Cap at 95%
             const probability = Math.min(Math.round(baseProb), 95);
-            
-            // Model confidence (based on data quality)
             const hasRecentInsp = m < 6;
             const hasCGD = r > 0;
             const dataQuality = (hasRecentInsp ? 40 : 20) + (hasCGD ? 30 : 0) + (v > 0 ? 30 : 20);
             const confidence = Math.min(dataQuality, 95);
             
-            // Display probability
             document.getElementById('violationProbability').textContent = probability;
             document.getElementById('modelConfidence').textContent = `${confidence}%`;
             document.getElementById('confidenceFill').style.width = `${confidence}%`;
             
-            // Position indicator
             const indicatorPos = (probability / 100) * 100;
             document.getElementById('predictionIndicator').style.left = `calc(${indicatorPos}% - 6px)`;
             
-            // Timeline predictions
             const t30 = Math.max(10, Math.round(probability * 0.3));
             const t60 = Math.max(15, Math.round(probability * 0.6));
             const t90 = probability;
@@ -1030,6 +1323,10 @@
             document.getElementById('pred30').textContent = `${t30}%`;
             document.getElementById('pred60').textContent = `${t60}%`;
             document.getElementById('pred90').textContent = `${t90}%`;
+            
+            document.getElementById('timeline30').classList.remove('active');
+            document.getElementById('timeline60').classList.remove('active');
+            document.getElementById('timeline90').classList.remove('active');
             
             if (t30 > 30) {
                 document.getElementById('pred30desc').textContent = 'URGENT: High near-term risk';
@@ -1058,7 +1355,6 @@
                 document.getElementById('pred90desc').textContent = 'Routine oversight sufficient';
             }
             
-            // Predicted violation types
             const vd = selectedRestaurant['Violation Details'] || '';
             const predViol = document.getElementById('predictedViolations');
             predViol.innerHTML = '';
@@ -1067,17 +1363,14 @@
             if (vd.toLowerCase().includes('pest') || vd.toLowerCase().includes('insect') || r > 2) {
                 violTypes.push({ type: 'Pest Control Issues', prob: Math.min(probability + 10, 95), color: 'red' });
             }
-            if (vd.toLowerCase().includes('temp') || vd.toLowerCase().includes('cold') || cm === 1) {
+            if (vd.toLowerCase().includes('temp') || vd.toLowerCase().includes('cold') || fsmStatus !== 'yes') {
                 violTypes.push({ type: 'Temperature Control', prob: Math.min(probability + 5, 95), color: 'red' });
             }
             if (vd.toLowerCase().includes('clean') || vd.toLowerCase().includes('dirty') || m > 8) {
                 violTypes.push({ type: 'Sanitation/Cleanliness', prob: Math.min(probability, 95), color: 'yellow' });
             }
-            if (cm === 1 || vd.toLowerCase().includes('manager') || vd.toLowerCase().includes('certified')) {
+            if (fsmStatus !== 'yes') {
                 violTypes.push({ type: 'Food Safety Certification', prob: 85, color: 'red' });
-            }
-            if (sp === 1) {
-                violTypes.push({ type: 'HACCP Compliance', prob: Math.min(probability + 15, 95), color: 'red' });
             }
             if (violTypes.length === 0) {
                 violTypes.push({ type: 'Minor Non-Compliance', prob: Math.max(probability - 20, 10), color: 'yellow' });
@@ -1094,7 +1387,6 @@
                 predViol.appendChild(div);
             });
             
-            // Risk indicators
             const indicators = document.getElementById('riskIndicators');
             indicators.innerHTML = '';
             
@@ -1102,9 +1394,9 @@
             if (m > 6) risks.push({ icon: '⏰', text: `${m} months since inspection - decay factor`, level: 'warning' });
             if (v > 2) risks.push({ icon: '🚨', text: `${v} critical violations - pattern detected`, level: 'danger' });
             if (r > 3) risks.push({ icon: '📱', text: `${r} negative CGD reviews - reputation impact`, level: 'warning' });
-            if (cm === 1) risks.push({ icon: '⚠️', text: 'No certified manager - compliance gap', level: 'danger' });
+            if (fsmStatus === 'required') risks.push({ icon: '⚠️', text: 'Missing required food safety manager', level: 'danger' });
+            if (fsmStatus === 'no') risks.push({ icon: '⚠️', text: 'No certified manager - compliance gap', level: 'warning' });
             if (ps < 80) risks.push({ icon: '📉', text: `Low previous score (${ps}) - historical trend`, level: 'warning' });
-            if (sp === 1 && v > 0) risks.push({ icon: '🔬', text: 'Specialized processes + violations', level: 'danger' });
             
             if (risks.length === 0) {
                 risks.push({ icon: '✅', text: 'No major risk indicators detected', level: 'success' });
@@ -1117,30 +1409,6 @@
                 div.innerHTML = `<span>${risk.icon}</span><span>${risk.text}</span>`;
                 indicators.appendChild(div);
             });
-        }
-
-        function getHighRiskGuidelines(v, m, r, sp, cm, ps) {
-            let list = ['IMMEDIATE: Inspect within 7-14 days', 'High failure probability'];
-            if (ps < 80) list.push(`Past failure (score ${ps})`);
-            if (v > 2) list.push(`${v} critical violations`);
-            if (cm === 1) list.push('No manager - enforcement required');
-            if (r > 3) list.push(`${r} negative reviews`);
-            list.push('Require Corrective Action Plan');
-            return list;
-        }
-
-        function getMediumRiskGuidelines(v, m, r, sp, cm, ps) {
-            let list = ['Schedule inspection within 90 days', 'Consider spot-check'];
-            if (v > 0) list.push(`Resolve ${v} violations`);
-            if (m > 6) list.push('Risk increasing over time');
-            if (r > 0) list.push(`${r} reviews indicate issues`);
-            return list;
-        }
-
-        function getLowRiskGuidelines(sp, cm, ps) {
-            let list = ['Routine schedule', 'Monitor passively'];
-            if (ps > 95) list.push(`Excellent score (${ps})`);
-            return list;
         }
     </script>
 </body>
