@@ -152,13 +152,61 @@
         <header class="text-center mb-6">
             <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800">🍽 RI Restaurant Risk Assessment Tool</h1>
             <p class="text-gray-500 mt-1 text-base">Enhanced Predictive Analytics & Consumer Feedback Analysis</p>
+            
+            <!-- Data Freshness Indicator -->
+            <div id="dataFreshnessAlert" class="hidden mt-3 mx-auto max-w-2xl">
+                <div class="bg-blue-50 border-l-4 border-blue-500 p-3 rounded">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <div class="text-left">
+                                <p class="text-sm font-semibold text-blue-800">Data Loaded: <span id="dataLoadTime">--</span></p>
+                                <p class="text-xs text-blue-600">Last updated from RI Health Inspection Portal</p>
+                            </div>
+                        </div>
+                        <a href="https://ri.healthinspections.us/ri/" target="_blank" class="text-xs font-semibold text-blue-600 hover:text-blue-800 underline">Check for Updates →</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Data Staleness Warning -->
+            <div id="dataStaleWarning" class="hidden mt-3 mx-auto max-w-2xl">
+                <div class="bg-yellow-50 border-l-4 border-yellow-500 p-3 rounded">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                        <div class="text-left flex-1">
+                            <p class="text-sm font-semibold text-yellow-800">⚠️ Data may be outdated</p>
+                            <p class="text-xs text-yellow-600">Loaded <span id="dataAgeText">--</span> ago. RI Health updates daily.</p>
+                        </div>
+                        <button id="refreshDataBtn" class="text-xs font-semibold bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600">
+                            Refresh Data
+                        </button>
+                    </div>
+                </div>
+            </div>
         </header>
 
         <!-- CSV Upload Section -->
         <div class="mb-6 p-6 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg border-2 border-purple-200">
-            <h2 class="text-xl font-semibold text-gray-700 mb-4 flex items-center gap-2">
-                📁 Step 1: Upload Inspection Data (CSV)
-            </h2>
+            <div class="flex items-start justify-between mb-4">
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-700 flex items-center gap-2">
+                        📁 Step 1: Upload Inspection Data (CSV)
+                    </h2>
+                    <p class="text-xs text-gray-600 mt-1">
+                        💡 <strong>Pro Tip:</strong> RI Health updates daily. <a href="https://ri.healthinspections.us/ri/" target="_blank" class="text-purple-600 hover:text-purple-800 underline font-semibold">Check for latest inspections →</a>
+                    </p>
+                </div>
+                <div class="text-right">
+                    <div class="text-xs font-semibold text-purple-700 bg-purple-100 px-3 py-1 rounded-full">
+                        📅 Daily Updates Available
+                    </div>
+                </div>
+            </div>
             
             <div class="file-upload-area p-8 rounded-lg text-center cursor-pointer" id="uploadArea">
                 <input type="file" id="csvFileInput" accept=".csv" class="hidden">
@@ -179,6 +227,27 @@
                 </div>
             </div>
 
+            <!-- Quick Instructions -->
+            <details class="mt-4 bg-white rounded-lg border border-purple-200">
+                <summary class="cursor-pointer p-3 text-sm font-semibold text-purple-700 hover:bg-purple-50 rounded-lg">
+                    ❓ How to get the latest inspection data
+                </summary>
+                <div class="p-4 text-sm text-gray-700 space-y-2 border-t border-purple-200">
+                    <p class="font-semibold text-purple-700">📋 Daily Update Process:</p>
+                    <ol class="list-decimal list-inside space-y-1 ml-2">
+                        <li>Visit the <a href="https://ri.healthinspections.us/ri/" target="_blank" class="text-purple-600 hover:text-purple-800 underline font-semibold">RI Health Inspection Portal</a></li>
+                        <li>Use your web scraper tool to export the latest inspection data to CSV</li>
+                        <li>Upload the CSV file using the area above</li>
+                        <li>The tool will automatically detect multiple inspections per facility</li>
+                    </ol>
+                    <div class="mt-3 p-2 bg-yellow-50 rounded border border-yellow-200">
+                        <p class="text-xs text-yellow-800">
+                            <strong>⏰ Best Practice:</strong> Update your data daily or weekly to ensure risk assessments reflect the most current inspection results.
+                        </p>
+                    </div>
+                </div>
+            </details>
+
             <div id="dataStats" class="hidden mt-4 grid grid-cols-2 md:grid-cols-4 gap-3">
                 <div class="bg-white p-3 rounded-lg shadow-sm border">
                     <p class="text-xs text-gray-500">Total Facilities</p>
@@ -195,6 +264,17 @@
                 <div class="bg-white p-3 rounded-lg shadow-sm border">
                     <p class="text-xs text-gray-500">Critical</p>
                     <p class="text-2xl font-bold text-red-700" id="statCritical">0</p>
+                </div>
+            </div>
+
+            <!-- Most Recent Inspection in Dataset -->
+            <div id="datasetDateInfo" class="hidden mt-3 p-3 bg-white rounded-lg border border-purple-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold text-gray-600">Most Recent Inspection in Dataset:</p>
+                        <p class="text-sm font-bold text-purple-700" id="mostRecentInspDate">--</p>
+                    </div>
+                    <div id="inspectionRecencyBadge" class="text-xs font-bold px-3 py-1 rounded-full"></div>
                 </div>
             </div>
         </div>
@@ -254,35 +334,74 @@
                             </div>
                         </div>
 
-                        <!-- Inspection Data -->
+                        <!-- Inspection History -->
                         <div class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-                            <h3 class="text-sm font-bold text-gray-700 mb-3">📊 Inspection History</h3>
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="text-sm font-bold text-gray-700">📊 Inspection History</h3>
+                                <span id="inspectionCountBadge" class="hidden text-xs font-bold bg-indigo-500 text-white px-3 py-1 rounded-full"></span>
+                            </div>
                             
-                            <div class="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-600 mb-1">Last Inspection Date</label>
-                                    <input type="text" id="lastInspectionDate" class="input-style bg-white" readonly>
+                            <div class="bg-white p-3 rounded-lg border mb-3">
+                                <h4 class="text-xs font-bold text-gray-700 mb-2">Most Recent Inspection</h4>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-600 mb-1">Inspection Date</label>
+                                        <input type="text" id="lastInspectionDate" class="input-style bg-gray-50" readonly>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-600 mb-1">Months Ago</label>
+                                        <input type="number" id="monthsSinceInspection" class="input-style bg-gray-50" readonly>
+                                    </div>
                                 </div>
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-600 mb-1">Months Since Inspection</label>
-                                    <input type="number" id="monthsSinceInspection" class="input-style bg-white" readonly>
+
+                                <div class="mt-3">
+                                    <label class="block text-xs font-medium text-gray-600 mb-1">Inspection Purpose</label>
+                                    <input type="text" id="inspectionPurpose" class="input-style bg-gray-50" readonly>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-3 mt-3">
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-600 mb-1">Total Violations</label>
+                                        <input type="number" id="totalViolations" class="input-style bg-gray-50" readonly>
+                                    </div>
+                                    <div>
+                                        <label class="block text-xs font-medium text-gray-600 mb-1">Critical Violations</label>
+                                        <input type="number" id="criticalViolations" class="input-style bg-gray-50" readonly>
+                                    </div>
+                                </div>
+
+                                <div class="mt-3">
+                                    <label class="block text-xs font-medium text-gray-600 mb-1">Violation Details</label>
+                                    <textarea id="violationDetails" class="input-style bg-gray-50" rows="2" readonly></textarea>
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-2 gap-3 mt-3">
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-600 mb-1">Total Violations</label>
-                                    <input type="number" id="totalViolations" class="input-style bg-white" readonly>
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-medium text-gray-600 mb-1">Critical Violations</label>
-                                    <input type="number" id="criticalViolations" class="input-style bg-white" readonly>
+                            <!-- Historical Inspections -->
+                            <div id="inspectionHistorySection" class="mt-3">
+                                <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-lg p-3">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <h4 class="text-sm font-bold text-indigo-700">📋 Full Inspection History</h4>
+                                        <span id="historyCount" class="text-xs font-bold bg-indigo-500 text-white px-3 py-1 rounded-full">0</span>
+                                    </div>
+                                    
+                                    <div id="inspectionHistoryList" class="space-y-2 max-h-96 overflow-y-auto">
+                                        <p class="text-xs text-gray-500 text-center p-3">Loading inspection history...</p>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="mt-3">
-                                <label class="block text-xs font-medium text-gray-600 mb-1">Violation Details</label>
-                                <textarea id="violationDetails" class="input-style bg-white" rows="2" readonly></textarea>
+                            <!-- Trend Analysis -->
+                            <div id="trendAnalysis" class="hidden bg-white p-3 rounded-lg border mt-3">
+                                <h4 class="text-xs font-bold text-gray-700 mb-2">📈 Compliance Trend</h4>
+                                <div class="flex items-center gap-2">
+                                    <div class="flex-1">
+                                        <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                                            <div id="trendBar" class="h-full transition-all duration-500"></div>
+                                        </div>
+                                    </div>
+                                    <span id="trendLabel" class="text-xs font-bold"></span>
+                                </div>
+                                <p id="trendDescription" class="text-xs text-gray-600 mt-2"></p>
                             </div>
                         </div>
 
@@ -415,8 +534,13 @@
                             </div>
 
                             <div class="mt-3">
-                                <label for="previousInspectionScore" class="block text-xs font-medium text-gray-700 mb-1">Previous Score (0-100)</label>
-                                <input type="number" id="previousInspectionScore" class="input-style" value="85" min="0" max="100" required>
+                                <label for="previousInspectionScore" class="block text-xs font-medium text-gray-700 mb-1">
+                                    Previous Inspection Score (Auto-Calculated)
+                                </label>
+                                <input type="number" id="previousInspectionScore" class="input-style bg-gray-100 cursor-not-allowed" value="85" min="0" max="100" readonly>
+                                <p class="text-xs text-gray-500 mt-1">
+                                    ℹ️ Calculated from violations: 100 - (Total × 5) - (Critical × 10)
+                                </p>
                             </div>
                         </div>
 
@@ -587,9 +711,54 @@
 
     <script>
         let csvData = [];
+        let restaurantInspections = {}; // Store multiple inspections per restaurant
         let selectedRestaurant = null;
         let cgdCache = {};
         let currentCGDData = null;
+        let dataLoadTimestamp = null;
+
+        // ============================================================
+        // AUTO-LOAD CSV FROM GITHUB
+        // ============================================================
+        const GITHUB_CSV_URL = 'https://raw.githubusercontent.com/chrismasse30-dev/RI-Restaurant-Risk-Assessment-Tool/main/ri_inspections_COMPLETE_WITH_DETAILS.csv';
+
+        window.addEventListener('DOMContentLoaded', function() {
+            loadCSVFromGitHub(GITHUB_CSV_URL);
+        });
+
+        async function loadCSVFromGitHub(url) {
+            try {
+                console.log('🔄 Loading inspection data from GitHub...');
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    console.warn('⚠️ Could not load from GitHub, please upload manually');
+                    return;
+                }
+                
+                const csvText = await response.text();
+                
+                // Parse and load the CSV
+                parseCSV(csvText);
+                dataLoadTimestamp = new Date();
+                
+                // Show success UI
+                document.getElementById('uploadPrompt').classList.add('hidden');
+                document.getElementById('uploadSuccess').classList.remove('hidden');
+                document.getElementById('uploadSuccessText').textContent = '✓ Data loaded from GitHub!';
+                document.getElementById('dataStats').classList.remove('hidden');
+                document.getElementById('restaurantSection').classList.remove('hidden');
+                
+                // Show data freshness
+                updateDataFreshnessIndicator();
+                
+                console.log('✅ CSV loaded successfully from GitHub!');
+            } catch (error) {
+                console.error('❌ Error loading CSV from GitHub:', error);
+                console.log('💡 Fallback: Users can still upload CSV manually');
+            }
+        }
+        // ============================================================
 
         const CGD_KEYWORDS = {
             high: ['sick', 'food poisoning', 'poisoning', 'stomach', 'ill', 'vomit', 'throw up', 'diarrhea'],
@@ -621,25 +790,114 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 parseCSV(e.target.result);
+                dataLoadTimestamp = new Date();
+                
                 document.getElementById('uploadPrompt').classList.add('hidden');
                 document.getElementById('uploadSuccess').classList.remove('hidden');
                 document.getElementById('uploadSuccessText').textContent = `✓ ${file.name} loaded!`;
                 document.getElementById('dataStats').classList.remove('hidden');
                 document.getElementById('restaurantSection').classList.remove('hidden');
+                
+                // Show data freshness indicator
+                updateDataFreshnessIndicator();
             };
             reader.readAsText(file);
         }
+
+        function updateDataFreshnessIndicator() {
+            if (!dataLoadTimestamp) return;
+            
+            const now = new Date();
+            const ageHours = (now - dataLoadTimestamp) / (1000 * 60 * 60);
+            const ageDays = Math.floor(ageHours / 24);
+            
+            // Format timestamp
+            const timeStr = dataLoadTimestamp.toLocaleString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
+            });
+            
+            document.getElementById('dataLoadTime').textContent = timeStr;
+            document.getElementById('dataFreshnessAlert').classList.remove('hidden');
+            
+            // Show staleness warning if data is more than 1 day old
+            if (ageHours > 24) {
+                let ageText = '';
+                if (ageDays === 1) {
+                    ageText = '1 day';
+                } else if (ageDays < 7) {
+                    ageText = `${ageDays} days`;
+                } else if (ageDays < 30) {
+                    const weeks = Math.floor(ageDays / 7);
+                    ageText = `${weeks} week${weeks > 1 ? 's' : ''}`;
+                } else {
+                    const months = Math.floor(ageDays / 30);
+                    ageText = `${months} month${months > 1 ? 's' : ''}`;
+                }
+                
+                document.getElementById('dataAgeText').textContent = ageText;
+                document.getElementById('dataStaleWarning').classList.remove('hidden');
+            } else {
+                document.getElementById('dataStaleWarning').classList.add('hidden');
+            }
+        }
+
+        // Update freshness indicator every minute
+        setInterval(updateDataFreshnessIndicator, 60000);
+
+        // Refresh data button
+        document.addEventListener('DOMContentLoaded', function() {
+            const refreshBtn = document.getElementById('refreshDataBtn');
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', function() {
+                    // Clear current data and prompt for new upload
+                    document.getElementById('uploadPrompt').classList.remove('hidden');
+                    document.getElementById('uploadSuccess').classList.add('hidden');
+                    document.getElementById('dataStats').classList.add('hidden');
+                    document.getElementById('restaurantSection').classList.add('hidden');
+                    document.getElementById('assessmentSection').classList.add('hidden');
+                    document.getElementById('dataFreshnessAlert').classList.add('hidden');
+                    document.getElementById('dataStaleWarning').classList.add('hidden');
+                    
+                    // Trigger file input
+                    document.getElementById('csvFileInput').click();
+                });
+            }
+        });
 
         function parseCSV(text) {
             const lines = text.split('\n').filter(line => line.trim());
             const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''));
             csvData = [];
+            restaurantInspections = {};
+            
+            console.log(`Parsing CSV with ${lines.length - 1} data rows`);
+            
             for (let i = 1; i < lines.length; i++) {
                 const values = parseCSVLine(lines[i]);
                 const row = {};
                 headers.forEach((header, index) => { row[header] = values[index] || ''; });
                 csvData.push(row);
+                
+                // Group inspections by facility ID
+                const facilityId = row['Facility ID'];
+                if (facilityId) {
+                    if (!restaurantInspections[facilityId]) {
+                        restaurantInspections[facilityId] = [];
+                    }
+                    restaurantInspections[facilityId].push(row);
+                }
             }
+            
+            // Log statistics
+            const multipleInspections = Object.values(restaurantInspections).filter(arr => arr.length > 1).length;
+            console.log(`Found ${Object.keys(restaurantInspections).length} unique facilities`);
+            console.log(`${multipleInspections} facilities have multiple inspections`);
+            
             populateRestaurantDropdown();
             updateDataStats();
         }
@@ -662,12 +920,26 @@
         function populateRestaurantDropdown() {
             const select = document.getElementById('restaurantSelect');
             select.innerHTML = '<option value="">-- Select Restaurant --</option>';
-            csvData.forEach((r, i) => {
-                const opt = document.createElement('option');
-                opt.value = i;
-                opt.textContent = `${r.Name} - ${r.Address}`;
-                select.appendChild(opt);
+            
+            // Get unique restaurants (using facility ID as key)
+            const uniqueRestaurants = {};
+            csvData.forEach(r => {
+                const facilityId = r['Facility ID'];
+                if (facilityId && !uniqueRestaurants[facilityId]) {
+                    uniqueRestaurants[facilityId] = r;
+                }
             });
+            
+            // Sort by name and populate dropdown
+            Object.values(uniqueRestaurants)
+                .sort((a, b) => (a.Name || '').localeCompare(b.Name || ''))
+                .forEach((r, i) => {
+                    const opt = document.createElement('option');
+                    opt.value = r['Facility ID'];
+                    const inspCount = restaurantInspections[r['Facility ID']]?.length || 1;
+                    opt.textContent = `${r.Name} - ${r.Address} ${inspCount > 1 ? `(${inspCount} inspections)` : ''}`;
+                    select.appendChild(opt);
+                });
         }
 
         function updateDataStats() {
@@ -679,37 +951,154 @@
             document.getElementById('statViolations').textContent = withViol;
             document.getElementById('statTotalViol').textContent = totalViol;
             document.getElementById('statCritical').textContent = criticalViol;
+            
+            // Find most recent inspection in dataset
+            let mostRecentDate = null;
+            csvData.forEach(r => {
+                const inspDate = r['Last Inspection Date'];
+                if (inspDate) {
+                    const date = new Date(inspDate);
+                    if (!mostRecentDate || date > mostRecentDate) {
+                        mostRecentDate = date;
+                    }
+                }
+            });
+            
+            if (mostRecentDate) {
+                const today = new Date();
+                const daysOld = Math.floor((today - mostRecentDate) / (1000 * 60 * 60 * 24));
+                
+                const dateStr = mostRecentDate.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                });
+                
+                document.getElementById('mostRecentInspDate').textContent = dateStr;
+                document.getElementById('datasetDateInfo').classList.remove('hidden');
+                
+                const badge = document.getElementById('inspectionRecencyBadge');
+                if (daysOld <= 7) {
+                    badge.textContent = '✓ Current';
+                    badge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-green-100 text-green-700';
+                } else if (daysOld <= 30) {
+                    badge.textContent = `${daysOld} days old`;
+                    badge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-yellow-100 text-yellow-700';
+                } else {
+                    badge.textContent = `${Math.floor(daysOld / 30)} months old`;
+                    badge.className = 'text-xs font-bold px-3 py-1 rounded-full bg-red-100 text-red-700';
+                }
+            }
         }
 
         document.getElementById('loadRestaurantBtn').addEventListener('click', function() {
-            const idx = document.getElementById('restaurantSelect').value;
-            if (idx === '') { alert('Select a restaurant first'); return; }
-            selectedRestaurant = csvData[idx];
-            populateForm(selectedRestaurant);
-            document.getElementById('assessmentSection').classList.remove('hidden');
-            document.getElementById('assessmentSection').scrollIntoView({ behavior: 'smooth' });
+            const facilityId = document.getElementById('restaurantSelect').value;
+            if (facilityId === '') { 
+                alert('Please select a restaurant first'); 
+                return; 
+            }
+            
+            // Get the most recent record for this facility
+            const inspections = restaurantInspections[facilityId];
+            if (!inspections || inspections.length === 0) {
+                console.error('No inspections found for facility:', facilityId);
+                alert('Error: No inspection data found for this facility');
+                return;
+            }
+            
+            try {
+                // Sort by date and get most recent
+                inspections.sort((a, b) => new Date(b['Last Inspection Date']) - new Date(a['Last Inspection Date']));
+                selectedRestaurant = inspections[0];
+                populateForm(selectedRestaurant);
+                document.getElementById('assessmentSection').classList.remove('hidden');
+                document.getElementById('assessmentSection').scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                console.error('Error loading restaurant data:', error);
+                alert('Error loading restaurant data. Please check the console for details.');
+            }
         });
 
         function populateForm(r) {
+            // Basic info - always present
             document.getElementById('restaurantName').value = r.Name || '';
             document.getElementById('restaurantId').value = r['Facility ID'] || '';
             document.getElementById('address').value = r.Address || '';
             document.getElementById('licenseType').value = r['License Type'] || '';
             document.getElementById('licenseNumber').value = r['License Number'] || '';
-            document.getElementById('lastInspectionDate').value = r['Last Inspection Date'] || '';
-            document.getElementById('totalViolations').value = r['Total Violations'] || '0';
-            document.getElementById('criticalViolations').value = r['Critical Violations'] || '0';
-            document.getElementById('violationDetails').value = r['Violation Details'] || 'None';
+            
+            // Get all inspections for this restaurant
+            const facilityId = r['Facility ID'];
+            const inspections = restaurantInspections[facilityId] || [];
+            
+            // Show inspection count badge
+            const countBadge = document.getElementById('inspectionCountBadge');
+            if (countBadge) {
+                if (inspections.length > 0) {
+                    countBadge.classList.remove('hidden');
+                    countBadge.textContent = `${inspections.length} Inspection${inspections.length !== 1 ? 's' : ''} on Record`;
+                } else {
+                    countBadge.classList.add('hidden');
+                }
+            }
+            
+            if (inspections.length > 0) {
+                // Sort by date, most recent first
+                inspections.sort((a, b) => new Date(b['Last Inspection Date']) - new Date(a['Last Inspection Date']));
+                
+                // Populate most recent inspection
+                const recent = inspections[0];
+                
+                // Safely set values with null checks
+                const setValueSafe = (id, value) => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.value = value || '';
+                    } else {
+                        console.warn(`Element ${id} not found`);
+                    }
+                };
+                
+                setValueSafe('lastInspectionDate', recent['Last Inspection Date']);
+                setValueSafe('inspectionPurpose', recent['Inspection Purpose'] || 'Routine');
+                setValueSafe('seatingCapacity', recent['Seats - Less than 50'] || recent['Seating Capacity'] || 'N/A');
+                setValueSafe('totalViolations', recent['Total Violations'] || '0');
+                setValueSafe('criticalViolations', recent['Critical Violations'] || '0');
+                setValueSafe('violationDetails', recent['Violation Details'] || 'None');
 
-            const inspDate = new Date(r['Last Inspection Date']);
-            const today = new Date();
-            const months = Math.floor((today - inspDate) / (1000 * 60 * 60 * 24 * 30));
-            document.getElementById('monthsSinceInspection').value = Math.max(months, 0);
+                const inspDate = new Date(recent['Last Inspection Date']);
+                const today = new Date();
+                const months = Math.floor((today - inspDate) / (1000 * 60 * 60 * 24 * 30));
+                setValueSafe('monthsSinceInspection', Math.max(months, 0));
 
-            const tv = parseInt(r['Total Violations'] || 0);
-            const cv = parseInt(r['Critical Violations'] || 0);
-            const score = Math.max(100 - (tv * 5) - (cv * 10), 0);
-            document.getElementById('previousInspectionScore').value = score;
+                const tv = parseInt(recent['Total Violations'] || 0);
+                const cv = parseInt(recent['Critical Violations'] || 0);
+                const score = Math.max(100 - (tv * 5) - (cv * 10), 0);
+                setValueSafe('previousInspectionScore', score);
+                
+                // Always show inspection history section and populate it
+                console.log(`Found ${inspections.length} inspections for facility ${facilityId}`);
+                const historyCountEl = document.getElementById('historyCount');
+                if (historyCountEl) {
+                    historyCountEl.textContent = inspections.length;
+                }
+                displayInspectionHistory(inspections);
+                
+                if (inspections.length > 1) {
+                    displayTrendAnalysis(inspections);
+                    const trendEl = document.getElementById('trendAnalysis');
+                    if (trendEl) trendEl.classList.remove('hidden');
+                } else {
+                    const trendEl = document.getElementById('trendAnalysis');
+                    if (trendEl) trendEl.classList.add('hidden');
+                }
+            } else {
+                console.warn('No inspections found for this facility');
+                const historyListEl = document.getElementById('inspectionHistoryList');
+                if (historyListEl) {
+                    historyListEl.innerHTML = '<p class="text-xs text-gray-500 text-center p-3">No inspection records found</p>';
+                }
+            }
 
             const lt = (r['License Type'] || '').toLowerCase();
             if (lt.includes('sushi') || lt.includes('seafood')) document.getElementById('cuisineType').value = '1.8';
@@ -719,6 +1108,129 @@
             document.getElementById('cgdReviews').value = '0';
             document.getElementById('cgdResults').classList.add('hidden');
             document.getElementById('cgdVerification').classList.add('hidden');
+        }
+
+        function displayInspectionHistory(inspections) {
+            const historyList = document.getElementById('inspectionHistoryList');
+            historyList.innerHTML = '';
+            
+            if (inspections.length === 0) {
+                historyList.innerHTML = '<p class="text-xs text-gray-500 text-center p-3">No inspection records found</p>';
+                return;
+            }
+            
+            // Display ALL inspections (skip first one since it's shown above, show the rest)
+            const historicalInspections = inspections.slice(1);
+            
+            if (historicalInspections.length === 0) {
+                historyList.innerHTML = '<p class="text-xs text-gray-500 text-center p-3 bg-white rounded">This facility has only 1 inspection on record</p>';
+                return;
+            }
+            
+            // Add header for previous inspections
+            const header = document.createElement('div');
+            header.className = 'text-xs font-bold text-indigo-700 mb-2 pb-2 border-b border-indigo-300';
+            header.textContent = `Previous Inspections (${historicalInspections.length})`;
+            historyList.appendChild(header);
+            
+            historicalInspections.forEach((insp, index) => {
+                const inspDate = new Date(insp['Last Inspection Date']);
+                const today = new Date();
+                const monthsAgo = Math.floor((today - inspDate) / (1000 * 60 * 60 * 24 * 30));
+                const totalViol = parseInt(insp['Total Violations'] || 0);
+                const critViol = parseInt(insp['Critical Violations'] || 0);
+                const violDetails = insp['Violation Details'] || 'None';
+                const purpose = insp['Inspection Purpose'] || 'Routine';
+                const seats = insp['Seats - Less than 50'] || insp['Seating Capacity'] || 'N/A';
+                
+                const violClass = critViol > 0 ? 'text-red-600' : totalViol > 0 ? 'text-yellow-600' : 'text-green-600';
+                const violBg = critViol > 0 ? 'bg-red-50 border-red-300' : totalViol > 0 ? 'bg-yellow-50 border-yellow-300' : 'bg-green-50 border-green-300';
+                
+                const div = document.createElement('div');
+                div.className = `p-3 rounded-lg border-2 ${violBg} hover:shadow-md transition-shadow`;
+                div.innerHTML = `
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-sm font-bold text-gray-800">${insp['Last Inspection Date']}</span>
+                                <span class="text-xs bg-gray-600 text-white px-2 py-0.5 rounded">${purpose}</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs text-gray-600">${monthsAgo} month${monthsAgo !== 1 ? 's' : ''} ago</span>
+                                <span class="text-xs text-gray-500">• Seats: ${seats}</span>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm font-bold ${violClass}">
+                                ${totalViol} violation${totalViol !== 1 ? 's' : ''}
+                            </div>
+                            ${critViol > 0 ? `<div class="text-xs text-red-700 font-semibold bg-red-200 px-2 py-0.5 rounded mt-1">${critViol} CRITICAL</div>` : ''}
+                        </div>
+                    </div>
+                    ${violDetails !== 'None' && violDetails !== '' ? `
+                    <details class="mt-3" ${index === 0 ? 'open' : ''}>
+                        <summary class="text-xs font-semibold text-gray-700 cursor-pointer hover:text-gray-900 bg-white bg-opacity-50 px-2 py-1 rounded">📋 View Violation Details</summary>
+                        <div class="text-xs text-gray-800 mt-2 pl-3 border-l-4 border-gray-400 bg-white bg-opacity-70 p-2 rounded">${violDetails}</div>
+                    </details>
+                    ` : '<div class="text-xs text-green-700 font-semibold mt-2 bg-green-200 bg-opacity-50 px-2 py-1 rounded inline-block">✓ No violations found</div>'}
+                `;
+                
+                historyList.appendChild(div);
+            });
+        }
+
+        function displayTrendAnalysis(inspections) {
+            if (inspections.length < 2) {
+                document.getElementById('trendAnalysis').classList.add('hidden');
+                return;
+            }
+            
+            document.getElementById('trendAnalysis').classList.remove('hidden');
+            
+            // Calculate trend based on last 3 inspections (or all if less than 3)
+            const recentInspections = inspections.slice(0, Math.min(3, inspections.length));
+            const violationCounts = recentInspections.map(i => 
+                parseInt(i['Total Violations'] || 0) + (parseInt(i['Critical Violations'] || 0) * 2)
+            );
+            
+            let trend = 'stable';
+            let trendColor = 'bg-yellow-400';
+            let trendLabel = '→ Stable';
+            let trendDesc = 'Violation patterns remain consistent';
+            
+            if (violationCounts.length >= 2) {
+                const recent = violationCounts[0];
+                const previous = violationCounts[1];
+                
+                if (recent > previous + 1) {
+                    trend = 'declining';
+                    trendColor = 'bg-red-500';
+                    trendLabel = '↓ Declining';
+                    trendDesc = 'Violations increasing - priority attention needed';
+                } else if (recent < previous - 1) {
+                    trend = 'improving';
+                    trendColor = 'bg-green-500';
+                    trendLabel = '↑ Improving';
+                    trendDesc = 'Violations decreasing - positive trend';
+                } else if (recent === 0 && previous === 0) {
+                    trend = 'excellent';
+                    trendColor = 'bg-green-600';
+                    trendLabel = '✓ Excellent';
+                    trendDesc = 'Consistently clean - maintain current practices';
+                }
+            }
+            
+            const trendBar = document.getElementById('trendBar');
+            trendBar.className = `h-full ${trendColor}`;
+            trendBar.style.width = trend === 'improving' || trend === 'excellent' ? '100%' : 
+                                   trend === 'declining' ? '30%' : '60%';
+            
+            document.getElementById('trendLabel').textContent = trendLabel;
+            document.getElementById('trendLabel').className = `text-xs font-bold ${
+                trend === 'improving' || trend === 'excellent' ? 'text-green-600' :
+                trend === 'declining' ? 'text-red-600' : 'text-yellow-600'
+            }`;
+            document.getElementById('trendDescription').textContent = trendDesc;
         }
 
         document.getElementById('fetchCGDBtn').addEventListener('click', async function() {
@@ -1013,12 +1525,33 @@
             let score = 0;
             let riskFactors = [];
             
-            // Original factors
-            const cw = parseFloat(document.getElementById('cuisineType').value);
-            const ps = parseInt(document.getElementById('previousInspectionScore').value);
-            const v = parseInt(document.getElementById('criticalViolations').value);
-            const m = parseInt(document.getElementById('monthsSinceInspection').value);
-            const r = parseInt(document.getElementById('cgdReviews').value);
+            // Safely get values with defaults
+            const getValueSafe = (id, defaultValue = 0) => {
+                const element = document.getElementById(id);
+                if (!element) {
+                    console.warn(`Element ${id} not found, using default: ${defaultValue}`);
+                    return defaultValue;
+                }
+                const value = parseFloat(element.value);
+                return isNaN(value) ? defaultValue : value;
+            };
+            
+            const getIntSafe = (id, defaultValue = 0) => {
+                const element = document.getElementById(id);
+                if (!element) {
+                    console.warn(`Element ${id} not found, using default: ${defaultValue}`);
+                    return defaultValue;
+                }
+                const value = parseInt(element.value);
+                return isNaN(value) ? defaultValue : value;
+            };
+            
+            // Original factors with safe defaults
+            const cw = getValueSafe('cuisineType', 1.4);
+            const ps = getIntSafe('previousInspectionScore', 85);
+            const v = getIntSafe('criticalViolations', 0);
+            const m = getIntSafe('monthsSinceInspection', 0);
+            const r = getIntSafe('cgdReviews', 0);
 
             // Original scoring
             const wV = v * 15;
@@ -1029,12 +1562,31 @@
             
             score += wV + wPS + wC + wM + wR;
             
-            if (v > 0) riskFactors.push({ factor: 'Critical Violations', points: wV, level: 'HIGH' });
-            if (ps < 80) riskFactors.push({ factor: 'Low Previous Score', points: wPS, level: 'MEDIUM' });
-            if (r > 0) riskFactors.push({ factor: 'Negative CGD Reviews', points: wR, level: 'MEDIUM' });
+            if (v > 0) riskFactors.push({ factor: 'Critical Violations', points: Math.round(wV), level: 'HIGH' });
+            if (ps < 80) riskFactors.push({ factor: 'Low Previous Score', points: Math.round(wPS), level: 'MEDIUM' });
+            if (r > 0) riskFactors.push({ factor: 'Negative CGD Reviews', points: Math.round(wR), level: 'MEDIUM' });
+            
+            // NEW: Historical Pattern Analysis
+            if (selectedRestaurant) {
+                const facilityId = selectedRestaurant['Facility ID'];
+                const inspections = restaurantInspections[facilityId] || [];
+                if (inspections.length > 1) {
+                    const patternRisk = calculateHistoricalPatternRisk(inspections);
+                    if (patternRisk.points > 0) {
+                        score += patternRisk.points;
+                        riskFactors.push(patternRisk);
+                    }
+                }
+            }
+            
+            // Get dropdown value safely
+            const getDropdownValue = (id) => {
+                const element = document.getElementById(id);
+                return element ? element.value : '';
+            };
             
             // NEW: Water Supply
-            const waterSupply = document.getElementById('waterSupply').value;
+            const waterSupply = getDropdownValue('waterSupply');
             if (waterSupply === 'well') {
                 score += 15;
                 riskFactors.push({
@@ -1046,7 +1598,7 @@
             }
             
             // NEW: Sewage System
-            const sewageSystem = document.getElementById('sewageSystem').value;
+            const sewageSystem = getDropdownValue('sewageSystem');
             if (sewageSystem === 'septic') {
                 score += 10;
                 riskFactors.push({
@@ -1058,7 +1610,7 @@
             }
             
             // NEW: Vulnerable Population
-            const vulnerablePop = document.getElementById('vulnerablePopulation').value;
+            const vulnerablePop = getDropdownValue('vulnerablePopulation');
             if (vulnerablePop === 'yes') {
                 score += 20;
                 riskFactors.push({
@@ -1070,7 +1622,7 @@
             }
             
             // NEW: Food Safety Manager
-            const fsmStatus = document.getElementById('foodSafetyManager').value;
+            const fsmStatus = getDropdownValue('foodSafetyManager');
             if (fsmStatus === 'required') {
                 score += 25;
                 riskFactors.push({
@@ -1099,7 +1651,8 @@
             ];
             
             specializedProcesses.forEach(proc => {
-                if (document.getElementById(proc.id).checked) {
+                const checkbox = document.getElementById(proc.id);
+                if (checkbox && checkbox.checked) {
                     score += 15;
                     riskFactors.push({
                         factor: `Specialized Process: ${proc.name}`,
@@ -1111,7 +1664,7 @@
             });
             
             // NEW: Establishment Type
-            const estType = document.getElementById('establishmentType').value;
+            const estType = getDropdownValue('establishmentType');
             if (estType === 'temporary') {
                 score += 8;
                 riskFactors.push({
@@ -1131,7 +1684,7 @@
             }
             
             // NEW: Hot Food Prep
-            if (document.getElementById('hotFoodPrep').value === 'yes') {
+            if (getDropdownValue('hotFoodPrep') === 'yes') {
                 score += 5;
                 riskFactors.push({
                     factor: 'Hot Food Preparation',
@@ -1142,7 +1695,7 @@
             }
             
             // NEW: PHF Foods
-            if (document.getElementById('phfFoods').value === 'yes') {
+            if (getDropdownValue('phfFoods') === 'yes') {
                 score += 10;
                 riskFactors.push({
                     factor: 'Potentially Hazardous Foods',
@@ -1153,7 +1706,7 @@
             }
             
             // NEW: Daily Volume
-            const volume = document.getElementById('dailyVolume').value;
+            const volume = getDropdownValue('dailyVolume');
             if (volume === 'high') {
                 score += 6;
                 riskFactors.push({
@@ -1172,11 +1725,73 @@
                 });
             }
             
-            const finalScore = Math.min(Math.round(score), 100);
+            // Ensure score is a valid number
+            const finalScore = Math.min(Math.max(Math.round(score), 0), 100);
+            
+            console.log('Risk Calculation:', {
+                rawScore: score,
+                finalScore: finalScore,
+                riskFactorCount: riskFactors.length
+            });
             
             displayResults(finalScore, v, m, r, riskFactors);
             displayRiskFactorBreakdown(riskFactors, finalScore);
             generatePredictions(finalScore, v, m, r, fsmStatus, ps, cw);
+        }
+
+        function calculateHistoricalPatternRisk(inspections) {
+            // Analyze last 3 inspections for patterns
+            const recentInspections = inspections.slice(0, Math.min(3, inspections.length));
+            
+            let totalViolations = 0;
+            let criticalViolations = 0;
+            let hasRepeatViolations = false;
+            
+            const violationTypes = new Set();
+            
+            recentInspections.forEach(insp => {
+                totalViolations += parseInt(insp['Total Violations'] || 0);
+                criticalViolations += parseInt(insp['Critical Violations'] || 0);
+                
+                const violDetails = (insp['Violation Details'] || '').toLowerCase();
+                if (violDetails !== 'none') {
+                    // Check for common violation keywords
+                    ['pest', 'temperature', 'clean', 'food contact', 'employee'].forEach(keyword => {
+                        if (violDetails.includes(keyword)) {
+                            if (violationTypes.has(keyword)) {
+                                hasRepeatViolations = true;
+                            }
+                            violationTypes.add(keyword);
+                        }
+                    });
+                }
+            });
+            
+            // Calculate pattern risk
+            let patternPoints = 0;
+            let level = 'LOW';
+            let note = '';
+            
+            if (hasRepeatViolations && recentInspections.length >= 2) {
+                patternPoints = 12;
+                level = 'HIGH';
+                note = 'Repeated violations across inspections - systemic issues';
+            } else if (criticalViolations > recentInspections.length) {
+                patternPoints = 8;
+                level = 'MEDIUM';
+                note = 'Multiple critical violations in history';
+            } else if (totalViolations > recentInspections.length * 2) {
+                patternPoints = 6;
+                level = 'MEDIUM';
+                note = 'Consistent violation pattern';
+            }
+            
+            return patternPoints > 0 ? {
+                factor: 'Historical Violation Pattern',
+                points: patternPoints,
+                level: level,
+                note: note
+            } : { points: 0 };
         }
 
         function displayRiskFactorBreakdown(riskFactors, totalScore) {
@@ -1294,28 +1909,51 @@
         function generatePredictions(score, v, m, r, fsmStatus, ps, cw) {
             document.getElementById('predictiveSection').classList.remove('hidden');
 
+            // Ensure all inputs are valid numbers with defaults
+            score = isNaN(score) ? 0 : Math.max(0, Math.min(100, score));
+            v = isNaN(v) ? 0 : Math.max(0, v);
+            m = isNaN(m) ? 0 : Math.max(0, m);
+            r = isNaN(r) ? 0 : Math.max(0, r);
+            ps = isNaN(ps) ? 85 : Math.max(0, Math.min(100, ps));
+            cw = isNaN(cw) ? 1.4 : Math.max(1.0, Math.min(1.8, cw));
+
+            // Calculate violation probability (0-100%)
             let baseProb = score * 0.85;
+            
+            // Adjust for time decay
             const timeFactor = Math.min(m / 12, 1.5);
             baseProb += timeFactor * 10;
+            
+            // Adjust for trend
             const trendFactor = v > 0 ? 1.2 : 0.8;
             baseProb *= trendFactor;
+            
+            // Adjust for management
             if (fsmStatus === 'required') baseProb += 15;
             if (fsmStatus === 'no') baseProb += 8;
+            
+            // Adjust for CGD
             baseProb += r * 2;
             
-            const probability = Math.min(Math.round(baseProb), 95);
+            // Cap at 95%
+            const probability = Math.min(Math.max(Math.round(baseProb), 0), 95);
+            
+            // Model confidence (based on data quality)
             const hasRecentInsp = m < 6;
             const hasCGD = r > 0;
             const dataQuality = (hasRecentInsp ? 40 : 20) + (hasCGD ? 30 : 0) + (v > 0 ? 30 : 20);
-            const confidence = Math.min(dataQuality, 95);
+            const confidence = Math.min(Math.max(dataQuality, 20), 95);
             
+            // Display probability
             document.getElementById('violationProbability').textContent = probability;
             document.getElementById('modelConfidence').textContent = `${confidence}%`;
             document.getElementById('confidenceFill').style.width = `${confidence}%`;
             
+            // Position indicator
             const indicatorPos = (probability / 100) * 100;
             document.getElementById('predictionIndicator').style.left = `calc(${indicatorPos}% - 6px)`;
             
+            // Timeline predictions
             const t30 = Math.max(10, Math.round(probability * 0.3));
             const t60 = Math.max(15, Math.round(probability * 0.6));
             const t90 = probability;
@@ -1355,7 +1993,8 @@
                 document.getElementById('pred90desc').textContent = 'Routine oversight sufficient';
             }
             
-            const vd = selectedRestaurant['Violation Details'] || '';
+            // Predicted violation types
+            const vd = selectedRestaurant ? (selectedRestaurant['Violation Details'] || '') : '';
             const predViol = document.getElementById('predictedViolations');
             predViol.innerHTML = '';
             
@@ -1387,6 +2026,7 @@
                 predViol.appendChild(div);
             });
             
+            // Risk indicators
             const indicators = document.getElementById('riskIndicators');
             indicators.innerHTML = '';
             
