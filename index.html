@@ -957,8 +957,25 @@
             csvData.forEach(r => {
                 const inspDate = r['Last Inspection Date'];
                 if (inspDate) {
-                    const date = new Date(inspDate);
-                    if (!mostRecentDate || date > mostRecentDate) {
+                    // Parse date properly for all formats
+                    let date;
+                    if (inspDate.includes('-')) {
+                        // Format: MM-DD-YYYY
+                        const parts = inspDate.split('-');
+                        if (parts.length === 3) {
+                            date = new Date(parseInt(parts[2]), parseInt(parts[0])-1, parseInt(parts[1]));
+                        }
+                    } else if (inspDate.includes('/')) {
+                        // Format: MM/DD/YYYY
+                        const parts = inspDate.split('/');
+                        if (parts.length === 3) {
+                            date = new Date(parseInt(parts[2]), parseInt(parts[0])-1, parseInt(parts[1]));
+                        }
+                    } else {
+                        date = new Date(inspDate);
+                    }
+                    
+                    if (date && !isNaN(date.getTime()) && (!mostRecentDate || date > mostRecentDate)) {
                         mostRecentDate = date;
                     }
                 }
